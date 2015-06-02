@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE project>
+<settings>
+  <servers>
+    <server>
+      <id>ARES</id>
+      <username>amohd</username>
+      <password>B00513005</password>
+    </server>
+    <server>
+      <id>JIEMEI</id>
+      <username>jmei</username>
+      <password>mj910525</password>
+    </server>
+  </servers>
+</settings>

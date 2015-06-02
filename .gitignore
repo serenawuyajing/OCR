@@ -1,0 +1,39 @@
+# Folders
+
+**/etc
+**/data
+**/target
+**/app
+**/node_modules
+**/components
+**/log
+
+# Temp Files
+
+**.swp
+**.swo
+**.un~
+
+# Packages
+
+**.war
+**.ear
+**.jar
+**.bin
+
+# Packages
+
+**.war
+**.ear
+**.jar
+
+# Eclipse Settings
+
+**.classpath
+**.project
+**.settings
+**/eclipse-classes/
+
+# Others
+
+**.DS_Store

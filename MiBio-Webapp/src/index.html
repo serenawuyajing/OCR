@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keywords" content="similarity, job description, curriculum vitaes" />
+        <meta name="description" content="This demo application computes and ranks curriculum vitaes based on their similarities with job description." />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Similarity App</title>
+
+        <!-- build:css css/main.css -->
+        <link href="../components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="styles/main.css" rel="stylesheet">
+        <!-- endbuild -->
+    </head>
+
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Similarity App <small>ver.0.1</small></a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#" class="button" data-toggle="modal" data-target="#settings" data-backdrop="static"><span class="glyphicon glyphicon-cog"></span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div id="wrapper" class="container">
+
+            <ul class="nav nav-pills">
+                <li class="active"><a data-toggle="tab" href="#job-description">Job Description</a></li>
+                <li><a data-toggle="tab" href="#curriculum-vitaes">Curriculum Vitaes</a></li>
+                <li><a data-toggle="tab" href="#result" id="result-tab">Result</a></li>
+            </ul>
+
+            <div class="tab-content">
+
+                <!-- Job description section -->
+                <div id="job-description" class="tab-pane fade in active">
+                    <div class="row">
+                        <h2>Job Description</h2>
+                        <span class="help-block">
+                            The description of the job requirements. The keywords will be selected for similarity computation.
+                        </span>
+
+                        <div class="col-md-10" id="job-description-input">
+                            <textarea id="job-description-ta" class="form-control" rows="30" placeholder="Edit job description information here."></textarea>
+                            <div id="tokens"></div>
+                        </div>
+                        <div class="col-md-2">
+                            <div>
+                                <span class="file-input btn btn-block btn-primary btn-file">
+                                    File input <input id="job-description-fi" type="file" multiple>
+                                </span>
+                                <span class="help-block">
+                                    Select file in the local machine, the content will display on the left.
+                                </span>
+                            </div>
+                            <div>
+                                <button id="tokenize-btn" class="btn btn-block btn-primary" data-toggle="button" disabled="disabled">Tokenize</button>
+                                <span class="help-block">
+                                    Tokenize the job description.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Curriculum Vitaes section -->
+                <div id="curriculum-vitaes" class="tab-pane fade">
+                    <div class="row">
+                        <h2>Curriculum Vitaes</h2>
+                        <span class="help-block">
+                            The curriculum vitaes to the job. They will be ranked by the the similarities.
+                        </span>
+
+                        <div class="col-md-10">
+                            <div id="cvs">
+                                <ul class="nav nav-tabs">
+                                </ul>
+                                <div class="tab-content">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div>
+                                <span class="file-input btn btn-block btn-primary btn-file">
+                                    Add file <input id="curriculum-vitaes-fi" type="file" multiple>
+                                </span>
+                                <span class="help-block">
+                                    Select and add file in the local machine, the content will display on the left.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result section -->
+                <div id="result" class="tab-pane fade">
+                    <div class="row">
+                        <h2>Result</h2>
+                        <span class="help-block">
+                            The ranking based on the similarities.
+                        </span>
+
+                        <div class="jumbotron">
+                            <p id="result-p" class="leading">
+                            </p>
+                        </div>
+                        <div class="pull-right">
+                            <button id="download-btn" class="btn btn-primary" data-toggle="button" disabled="disabled">Download</button>
+                            <span class="help-block">
+                                Download result.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- .tab-content -->
+
+            <div id="about" class="row">
+            </div>
+
+        </div><!-- #wrapper -->
+
+        <div class="container footer">
+            <footer>
+                <div class="col-lg-12">
+                    <hr>
+                    <span class="help-block">
+                        GTM Group, Visual Text Analytics Lab, 2014
+                    </span>
+                </div>
+            </footer>
+        </div>
+
+        <!-- The setting menu. -->
+        <div id="settings" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="settings-title" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="settings-title">Settings</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Importance</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Fatal</span>
+                                    <input id="fatal-in" type="text" class="form-control" placeholder="weight">
+                                    <!-- TODO : Add modification functions. -->
+                                    <!--
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span></button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li><a href="#">Move up</a></li>
+                                            <li><a href="#">Move down</a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="#">Rename</a></li>
+                                            <li><a href="#">Copy</a></li>
+                                            <li><a href="#">Delete</a></li>
+                                        </ul>
+                                    </span>
+                                    -->
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-addon">Important</span>
+                                    <input id="important-in" type="text" class="form-control" placeholder="weight">
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-addon">Normal</span>
+                                    <input id="normal-in" type="text" class="form-control" placeholder="weight">
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-addon">Negligible</span>
+                                    <input id="negligible-in" type="text" class="form-control" placeholder="weight">
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-addon">Useless</span>
+                                    <input id="useless-in" type="text" class="form-control" placeholder="weight">
+                                </div>
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Stopwords</h3>
+                            </div>
+                            <div class="panel-body">
+                                <textarea id="stopword-ta" class="form-control" rows="10" placeholder="Edit stop words here."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="setting-close-btn" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="setting-save-btn" type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ul id="contextmenu" class="dropdown-menu" role="menu" style="display:none">
+            <li id="fatal" class="contextitem"><a href="#">fatal<span class="glyphicon glyphicon-ok pull-right"></span></a></li>
+            <li id="important" class="contextitem"><a href="#">important<span class="glyphicon glyphicon-ok pull-right"></span></a></li>
+            <li id="normal" class="contextitem"><a href="#">normal<span class="glyphicon glyphicon-ok pull-right"></span></a></li>
+            <li id="negligible" class="contextitem"><a href="#">negligible<span class="glyphicon glyphicon-ok pull-right"></span></a></li>
+            <li id="useless" class="contextitem"><a href="#">useless<span class="glyphicon glyphicon-ok pull-right"></span></a></li>
+            <li class="divider"></li>
+            <li id="positive" class="contextitem"><a href="#">positive<span class="glyphicon glyphicon-ok pull-right"></span></a></li>
+            <li id="negative" class="contextitem"><a href="#">negative<span class="glyphicon glyphicon-ok pull-right"></span></a></li>
+            <li class="divider"></li>
+            <li id="modify" class="contextitem"><a href="#">modify</a></li>
+        </ul>
+
+        <!-- build:js js/vendor.js -->
+        <script src="../components/jquery/dist/jquery.min.js"></script>
+        <script src="../components/FileSaver/FileSaver.js"></script>
+        <script src="../components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <!-- endbuild -->
+        <!-- build:js js/main.js -->
+        <script src="scripts/main.js"></script>
+        <script src="scripts/md5.js"></script>
+        <!-- endbuild -->
+    </body>
+</html>

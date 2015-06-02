@@ -5,8 +5,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>edu.dal.mibio.api</groupId>
-  <artifactId>mibio</artifactId>
-  <name>MiBio RESTful Web API</name>
+  <artifactId>mibio-api</artifactId>
+  <name>MiBio-API</name>
   <packaging>war</packaging>
 
   <description>
@@ -25,8 +25,11 @@
   </parent>
 
   <build>
-    <finalName>mibio-api</finalName>
     <plugins>
+      <plugin>
+        <groupId>org.eclipse.m2e</groupId>
+        <artifactId>lifecycle-mapping</artifactId>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

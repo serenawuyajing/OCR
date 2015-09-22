@@ -41,7 +41,7 @@ public class TestCorrector
     List<Error> errors = test.correct("hollo world");
     for (Error e : errors) {
       System.out.println("Error: " + e.toString());
-      System.out.println("Candidate: " + e.getCandidates());
+      System.out.println("Candidate: " + e.candidates());
     }
   }
 }

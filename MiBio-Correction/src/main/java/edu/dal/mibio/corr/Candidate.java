@@ -10,9 +10,22 @@ public class Candidate
     this.name = name;
     this.confidence = confidence;
   }
+  
+  public String name() { return name; }
+
+  public double confidence() { return confidence; }
 
   @Override
   public String toString() { return name; }
-
-  public double confidence() { return confidence; }
+  
+  @Override
+  public boolean equals(Object other)
+  {
+    if (other instanceof Candidate
+        && ((Candidate) other).name().equals(name)
+        && ((Candidate) other).confidence() == confidence) {
+      return true;
+    }
+    return false;
+  }
 }

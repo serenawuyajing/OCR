@@ -27,9 +27,12 @@ public class TestCorrector
         size++;
       } else {
         String token = sb.toString();
+        // It detects error "hollo"
         if (token.equals("hollo"))
           errors.add(new Error(token, offset, cands));
         offset += size + 1;
+        size = 0;
+        sb = new StringBuilder();
       }
     }
     return errors;
@@ -38,10 +41,11 @@ public class TestCorrector
   public static void main(String[] args)
   {
     Corrector test = new TestCorrector();
-    List<Error> errors = test.correct("hollo world");
+    List<Error> errors = test.correct("This is a hollo world test");
     for (Error e : errors) {
       System.out.println("Error: " + e.toString());
       System.out.println("Candidate: " + e.candidates());
     }
+    System.out.println("DONE");
   }
 }

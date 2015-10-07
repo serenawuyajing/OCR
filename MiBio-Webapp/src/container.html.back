@@ -1,0 +1,89 @@
+      <ul class="nav nav-pills">
+        <li class="active"><a data-toggle="tab" href="#job-description">Job Description</a></li>
+        <li><a data-toggle="tab" href="#curriculum-vitaes">Curriculum Vitaes</a></li>
+        <li><a data-toggle="tab" href="#result" id="result-tab">Result</a></li>
+      </ul>
+
+      <div class="tab-content">
+
+        <!-- Job description section -->
+        <div id="job-description" class="tab-pane fade in active">
+          <div class="row">
+            <h2>Job Description</h2>
+            <span class="help-block">
+              The description of the job requirements. The keywords will be selected for similarity computation.
+            </span>
+
+            <div class="col-md-10" id="job-description-input">
+              <textarea id="job-description-ta" class="form-control" rows="30" placeholder="Edit job description information here."></textarea>
+              <div id="tokens"></div>
+            </div>
+            <div class="col-md-2">
+              <div>
+                <span class="file-input btn btn-block btn-primary btn-file">
+                  File input <input id="job-description-fi" type="file" multiple>
+                </span>
+                <span class="help-block">
+                  Select file in the local machine, the content will display on the left.
+                </span>
+              </div>
+              <div>
+                <button id="tokenize-btn" class="btn btn-block btn-primary" data-toggle="button" disabled="disabled">Tokenize</button>
+                <span class="help-block">
+                  Tokenize the job description.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Curriculum Vitaes section -->
+        <div id="curriculum-vitaes" class="tab-pane fade">
+          <div class="row">
+            <h2>Curriculum Vitaes</h2>
+            <span class="help-block">
+              The curriculum vitaes to the job. They will be ranked by the the similarities.
+            </span>
+
+            <div class="col-md-10">
+              <div id="cvs">
+                <ul class="nav nav-tabs">
+                </ul>
+                <div class="tab-content">
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div>
+                <span class="file-input btn btn-block btn-primary btn-file">
+                  Add file <input id="curriculum-vitaes-fi" type="file" multiple>
+                </span>
+                <span class="help-block">
+                  Select and add file in the local machine, the content will display on the left.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result section -->
+        <div id="result" class="tab-pane fade">
+          <div class="row">
+              <h2>Result</h2>
+              <span class="help-block">
+                The ranking based on the similarities.
+              </span>
+
+              <div class="jumbotron">
+                <p id="result-p" class="leading"></p>
+              </div>
+              <div class="pull-right">
+                <button id="download-btn" class="btn btn-primary" data-toggle="button" disabled="disabled">Download</button>
+                <span class="help-block">
+                  Download result.
+                </span>
+              </div>
+          </div>
+        </div>
+
+      </div><!-- .tab-content -->

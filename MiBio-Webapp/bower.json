@@ -1,18 +1,19 @@
 {
-    "name": "gtm-jobapp-demo",
-    "version": "1.0.0",
-    "author": [
-        "Jie Mei <mei.jie@hotmail.com>"
-    ],
-    "dependencies": {
-        "jquery": "latest",
-        "bootstrap": "latest",
-        "FileSaver": "latest",
-        "angular": "latest"
-    },
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components"
-    ]
+  "name": "mibio-app",
+  "version": "1.0.0",
+  "author": [
+    "Jie Mei <mei.jie@hotmail.com>"
+  ],
+  "dependencies": {
+    "jquery": "latest",
+    "bootstrap": "latest",
+    "FileSaver": "latest",
+    "angular": "latest",
+    "typed": "latest"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ]
 }

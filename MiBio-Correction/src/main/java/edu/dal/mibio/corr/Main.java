@@ -1,70 +1,32 @@
 package edu.dal.mibio.corr;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.dal.mibio.corr.corrector.DocumentCorrector;
+import edu.dal.mibio.corr.corrector.DomainWordCorrector;
+import edu.dal.mibio.corr.corrector.Error;
+import edu.dal.mibio.corr.corrector.UnigramWordCorrector;
+import edu.dal.mibio.corr.corrector.WikiWordCorrector;
+import edu.dal.mibio.corr.corrector.WordCorrector;
+import edu.dal.mibio.corr.util.FileUtils;
+import edu.dal.mibio.corr.util.ResourceUtils;
 
 public class Main
 {
   public static void main(String[] args)
+      throws FileNotFoundException, IOException
   {
     List<WordCorrector> corrs = new ArrayList<WordCorrector>();
-
-    // Create on sample word corrector.
-    WordCorrector wc1 = new WordCorrector(
-        new ErrorDetector(){
-          // Treat "h" as an error.
-          @Override
-          public boolean isError(Word word)
-          {
-            return word.word().equals("h");
-          }
-        },
-        new ErrorCorrector(){
-          // Correct error to "x" with 100% confidence.
-          @Override
-          public List<Error> correct(Word word)
-          {
-            Candidate cand = new Candidate("x", 1.0);
-            List<Candidate> list = new ArrayList<Candidate>();
-            list.add(cand);
-            List<Error> errors = new ArrayList<Error>();
-            for (WordContext wc : word.contexts())
-              errors.add(new Error(wc, list));
-            return errors;
-          }
-    }){};
-
-    // Create another sample word corrector.
-    WordCorrector wc2 = new WordCorrector(
-        new ErrorDetector(){
-          // Treat "h" and "a" as an error.
-          @Override
-          public boolean isError(Word word)
-          {
-            String w = word.word();
-            return w.equals("a") || w.equals("h");
-          }
-        },
-        new ErrorCorrector(){
-          // Correct error to "y" with 50% confidence.
-          @Override
-          public List<Error> correct(Word word)
-          {
-            Candidate cand = new Candidate("y", 0.5);
-            List<Candidate> list = new ArrayList<Candidate>();
-            list.add(cand);
-            List<Error> errors = new ArrayList<Error>();
-            for (WordContext wc : word.contexts())
-              errors.add(new Error(wc, list));
-            return errors;
-          }
-    }){};
-
-    corrs.add(wc1);
-    corrs.add(wc2);
+    corrs.add(new WikiWordCorrector());
+    corrs.add(new DomainWordCorrector());
+    corrs.add(new UnigramWordCorrector());
 
     List<Error> errors = new DocumentCorrector().correct(corrs,
-        "a b c d e f g h i j k l m n");
+        FileUtils.read(ResourceUtils.TEST_INPUT_SEGMENT));
+
     for (Error e : errors)
       System.out.println(e);
   }

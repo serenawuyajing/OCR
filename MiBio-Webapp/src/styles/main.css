@@ -1,31 +1,61 @@
 /* Aviod navigation section hidding by the header. */
-#wrapper>.nav {
-    padding-top: 70px;
+#wrapper {
+  padding-top: 70px;
+}
+
+#header {
+  padding: 20%;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+}
+
+.center {
+  text-align:center;
 }
 
 /* Change file input button into bootstrap style. */
 .btn-file {
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  overflow: hidden;
 }
 .btn-file input[type=file] {
-    position: absolute;
-    top: 0;
-    right: 0;
-    min-width: 100%;
-    min-height: 100%;
-    font-size: 999px;
-    text-align: right;
-    filter: alpha(opacity=0);
-    opacity: 0;
-    background: red;
-    cursor: inherit;
-    display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  font-size: 999px;
+  text-align: right;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  background: red;
+  cursor: inherit;
+  display: block;
 }
 input[readonly] {
-    background-color: white !important;
-    cursor: text !important;
+  background-color: white !important;
+  cursor: text !important;
 }
+
+/* Advanced options panel. */
+#advopt-panel {
+  padding-top: 20px;
+}
+
+.content-display {
+  /* white-space: pre-wrap; */
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Remove button focus border. */
+a:focus, button:focus { outline:0; }
+
 /* Token styles. */
 token[importance=fatal]      { color: #FF0000; font-weight: bold; }
 token[importance=important]  { color: #FF0000; }
@@ -34,3 +64,12 @@ token[importance=useless]    { opacity: 0.4; font-weight: lighter; }
 token[affect=positive]       { }
 token[affect=negative]       { text-decoration: line-through; }
 token:hover                  { background-color: #CCCCCC; }
+
+error {
+  font-weight: bold;
+  white-space: nowrap; 
+}
+error:hover                  { background-color: #CCCCCC; }
+error[state=incorrect]       { color: #FF0000; }
+error[state=corrected]       { color: #FF9933; }
+error[state=checked]         { color: #33CC33; }

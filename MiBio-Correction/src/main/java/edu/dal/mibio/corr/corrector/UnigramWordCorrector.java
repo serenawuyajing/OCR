@@ -1,24 +1,24 @@
 package edu.dal.mibio.corr.corrector;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
 
-import edu.dal.mibio.corr.util.FileUtils;
-import edu.dal.mibio.corr.util.ResourceUtils;
-import gnu.trove.map.hash.TObjectLongHashMap;
+import edu.dal.mibio.corr.util.Unigram;
 
 public class UnigramWordCorrector
     extends WordCorrector
 {
   public UnigramWordCorrector()
-      throws FileNotFoundException, IOException
+      throws IOException
   {
-    this(FileUtils.readUnigram(ResourceUtils.UNIGRAM));
+    super(new UnigramErrorDetector(Unigram.getInstance()),
+        new UnigramErrorCorrector(Unigram.getInstance()), "typeUni");
   }
 
-  private UnigramWordCorrector(TObjectLongHashMap<String> unigram)
+  public UnigramWordCorrector(File unigram)
+      throws IOException
   {
-    super(new UnigramErrorDetector(unigram), new UnigramErrorCorrector(unigram),
-        "typeUni");
+    super(new UnigramErrorDetector(Unigram.getInstance(unigram)),
+        new UnigramErrorCorrector(Unigram.getInstance(unigram)), "typeUni");
   }
 }

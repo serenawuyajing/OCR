@@ -1,5 +1,6 @@
 package edu.dal.mibio.corr.corrector;
 
+import edu.dal.mibio.corr.util.Unigram;
 import gnu.trove.map.hash.TObjectLongHashMap;
 
 public class UnigramErrorDetector
@@ -7,9 +8,9 @@ public class UnigramErrorDetector
 {
   private TObjectLongHashMap<String> unigram;
 
-  public UnigramErrorDetector(TObjectLongHashMap<String> unigram)
+  public UnigramErrorDetector(Unigram unigram)
   {
-    this.unigram = unigram;
+    this.unigram = unigram.map();
   }
 
   @Override

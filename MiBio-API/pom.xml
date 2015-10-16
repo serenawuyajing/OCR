@@ -69,8 +69,8 @@
         <configuration>
           <packagingExcludes>
             WEB-INF/classes/**/*.java,
-            WEB-INF/classes/**/*.swp,
-            WEB-INF/classes/**/*.jar
+            WEB-INF/classes/**/*.jar,
+            WEB-INF/classes/**/*.swp
           </packagingExcludes>
         </configuration>
       </plugin>

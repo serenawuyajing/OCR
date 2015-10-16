@@ -1,15 +1,29 @@
 /* Aviod navigation section hidding by the header. */
+
+html, body {
+  height: 100%;
+}
+
 #wrapper {
   padding-top: 70px;
+  min-height: 100%;
 }
 
 #header {
   padding: 20%;
 }
 
+#main {
+  overflow:auto;
+  padding-bottom:30px; /* this needs to be bigger than footer height*/
+}
+
 .footer {
-  position: absolute;
-  bottom: 0;
+  position: relative;
+  margin-top: -20px; /* negative value of footer height */
+  height: 20px;
+  clear:both;
+  padding-top:20px;
 }
 
 .center {
@@ -49,10 +63,6 @@ input[readonly] {
   /* white-space: pre-wrap; */
 }
 
-.text-right {
-  text-align: right;
-}
-
 /* Remove button focus border. */
 a:focus, button:focus { outline:0; }
 
@@ -73,3 +83,10 @@ error:hover                  { background-color: #CCCCCC; }
 error[state=incorrect]       { color: #FF0000; }
 error[state=corrected]       { color: #FF9933; }
 error[state=checked]         { color: #33CC33; }
+
+a.anchor {
+  display: block;
+  position: relative;
+  top: -250px;
+  visibility: hidden;
+}

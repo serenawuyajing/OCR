@@ -2,16 +2,25 @@ package edu.dal.mibio.corr.corrector;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import edu.dal.mibio.corr.util.Unigram;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;
+import gnu.trove.map.hash.TObjectLongHashMap;
 
 public class DocumentCorrector
 {
+  private static Pattern SPLIT_PATTERN = Pattern.compile("(^-*|)[^-]++(-*$|)");
+
   public List<Error> correct(List<WordCorrector> correctors, String content)
   {
     /* Store eight latest reading consecutive tokens and positions. */
@@ -26,50 +35,118 @@ public class DocumentCorrector
 
     /* Tokenize content using Peen Treebank. */
     PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<>(new StringReader(content),
-        new CoreLabelTokenFactory(), "");
-    int tidx;
-    for (tidx = 0; ptbt.hasNext(); tidx++) {
-      
-      /* Add token to context. */
+        new CoreLabelTokenFactory(), "ptb3Escaping=false,normalizeOtherBrackets=false");
+    int widx = 0;
+    while (ptbt.hasNext()) {
       CoreLabel token = ptbt.next();
-      int idx = tidx % 8;
-      context[idx] = token.toString();
-      position[idx] = token.beginPosition();
-      if (tidx < 3)
-        continue;
-      
-      /* Store the full-context token. */
-      idx = (tidx - 3) % 8;
-      addToMap(wordMap, new WordContext(
-          position[idx],
-          context[(tidx + 1) % 8],
-          context[(tidx + 2) % 8],
-          context[(tidx + 3) % 8],
-          context[(tidx + 4) % 8],
-          context[idx],
-          context[(tidx - 2) % 8],
-          context[(tidx - 1) % 8],
-          context[tidx % 8]
-      ));
+
+      /* Split if '-' in token. */
+      Matcher m = SPLIT_PATTERN.matcher(token.toString());
+      while(m.find()) {
+        
+        /* Add token to context. */
+        int idx = widx % 8;
+        context[idx] = m.group();
+        position[idx] = token.beginPosition() + m.start();;
+
+        if (widx > 3) {
+
+          /* Store the full-context token. */
+          idx = (widx - 3) % 8;
+          addToMap(wordMap, new WordContext(
+              position[idx],
+              context[(widx + 1) % 8],
+              context[(widx + 2) % 8],
+              context[(widx + 3) % 8],
+              context[(widx + 4) % 8],
+              context[idx],
+              context[(widx - 2) % 8],
+              context[(widx - 1) % 8],
+              context[widx % 8]));
+        }
+        widx++;
+      }
     }
     /* Store the tailing tokens. */
-    for (int i = 0; i < 3; tidx++, i++) {
-      int idx = (tidx - 3) % 8;
-      if (position[idx] >= 0)
+    for (int i = 0; i < 3; widx++, i++) {
+      int idx = (widx + 5) % 8;
+      if (position[idx] >= 0) {
         addToMap(wordMap, new WordContext(
             position[idx],
-            context[(tidx + 1) % 8],
-            context[(tidx + 2) % 8],
-            context[(tidx + 3) % 8],
-            context[(tidx + 4) % 8],
+            context[(widx + 1) % 8],
+            context[(widx + 2) % 8],
+            context[(widx + 3) % 8],
+            context[(widx + 4) % 8],
             context[idx],
-            (i > 1 ? "" : context[(tidx - 2) % 8]),
-            (i > 0 ? "" : context[(tidx - 1) % 8]),
+            (i > 1 ? "" : context[(widx - 2) % 8]),
+            (i > 0 ? "" : context[(widx - 1) % 8]),
             ""
         ));
+      }
     }
 
-    return correct(correctors, new ArrayList<Word>(wordMap.values()));
+    /* Filter words that exists in the unigram. */
+    TObjectLongHashMap<String> map = Unigram.getInstance().map();
+    List<Word> words = new LinkedList<Word>(wordMap.values());
+    for (int i = 0; i < words.size();) {
+      if (validUniGram(words.get(i).word(), map.get(words.get(i).word()))) {
+        words.remove(words.get(i));
+      } else {
+        i++;
+      }
+    }
+
+    return correct(correctors, words);
+  }
+  
+  private boolean validUniGram(String word, long count){
+    boolean validFlag= true;
+    if(word.length()==1) {
+      if(count<1000000000){
+        validFlag = false;
+      }
+    } else if(word.length() == 2) {
+      if(count< 10000000) {
+        validFlag = false;
+      }
+    } else if(word.length() == 3) {
+      if(count< 1000000) {
+        validFlag = false;
+      }
+    }
+    else if(word.length() == 4) {
+      if(count< 100000) {
+        validFlag = false;
+      }
+    } else if(word.length() == 5) {
+      if(count< 100000) {
+        validFlag = false;
+      }
+    } else if(word.length() == 6) {
+      if(count< 10000) {
+        validFlag = false;
+      }
+    } else if(word.length() == 7) {
+      if(count< 10000) {
+        validFlag = false;
+      }
+    } else if(word.length() >=8 && word.length()<=10) {
+      if(count< 10000)
+      {
+        validFlag = false;
+      }
+    } else if(word.length() >=11 && word.length()<=15) {
+      if(count< 1000) {
+        validFlag = false;
+      }
+    } else if(word.length() >=16 && word.length()<=100) {
+      if(count< 200) {
+        validFlag = false;
+      }
+    } else {
+      validFlag = true;
+    }
+    return validFlag;
   }
   
   private void addToMap(Map<String, Word> map, WordContext context)
@@ -108,6 +185,19 @@ public class DocumentCorrector
         }
       }
     }
-    return new ArrayList<Error>(errMap.values());
+    /* Confidence normalization. */
+    List<Error> errors = new ArrayList<Error>(errMap.values());
+    for (Error e : errors)
+      e.normalize().sort();
+    
+    /* Sort errors by position. */
+    Collections.sort(errors, new Comparator<Error>(){
+      @Override
+      public int compare(Error e1, Error e2)
+      {
+        return (int)(e1.position() - e2.position());
+      }
+    });
+    return errors;
   }
 }

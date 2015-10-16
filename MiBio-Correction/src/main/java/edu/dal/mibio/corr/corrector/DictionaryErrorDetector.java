@@ -1,11 +1,7 @@
 package edu.dal.mibio.corr.corrector;
 
-import edu.dal.mibio.corr.util.FileUtils;
 import gnu.trove.set.hash.THashSet;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,12 +11,6 @@ public class DictionaryErrorDetector
 {
 	
   private THashSet<String> dictionary;
-
-  public DictionaryErrorDetector(File file)
-      throws FileNotFoundException, IOException
-  {
-    dictionary = FileUtils.readList(file);
-  }
   
   public DictionaryErrorDetector(THashSet<String> dictionary)
   {

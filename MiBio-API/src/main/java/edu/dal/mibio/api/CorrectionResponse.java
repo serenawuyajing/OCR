@@ -6,8 +6,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import edu.dal.mibio.corr.Candidate;
-import edu.dal.mibio.corr.Error;
+import edu.dal.mibio.corr.corrector.Candidate;
+import edu.dal.mibio.corr.corrector.Error;
 
 @XmlRootElement
 public class CorrectionResponse
@@ -34,10 +34,10 @@ public class CorrectionResponse
     
     public ErrorElement(Error error)
     {
-      name = error.toString();
+      name = error.name();
       position = error.position();
       candidates = new ArrayList<CandidateElement>();
-      for (Candidate c : error.getCandidates())
+      for (Candidate c : error.candidates())
         candidates.add(new CandidateElement(c));
     }
   }

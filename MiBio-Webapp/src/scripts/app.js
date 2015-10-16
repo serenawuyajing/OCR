@@ -40,7 +40,7 @@ var RESPONSE = {
 };
 
 (function() {
-  var app = angular.module('mibioApp', ['file-model']);
+  var app = angular.module('mibioApp', []);
 
   app.directive('onReadFile', function($parse) {
     return {
@@ -73,18 +73,55 @@ var RESPONSE = {
     };
   });
 
-  app.controller('AppStateController', function(){
-    this.states = {
+  app.controller('AppStateController', function($scope, $http){
+    $scope.states = {
       READY:     1,
       WAIT:      2,
       PROCESSED: 3
     };
-    this.state = this.states.READY;
-    this.submit = function() {
-      this.state = this.states.WAIT;
+    $scope.state = $scope.states.READY;
+    this.state = function() {
+      return $scope.state;
+    }
+    this.isReady = function() {
+      return $scope.state === $scope.states.READY;
+    }
+    this.isWait = function() {
+      return $scope.state === $scope.states.WAIT;
+    }
+    this.isProcessed = function() {
+      return $scope.state === $scope.states.PROCESSED;
+    }
+    this.submit = function(userInputController, displayController) {
+      HoldOn.open({
+        theme:"sk-cube",
+        message:'Please wait for correcting...',
+        textColor:"white"
+      });
+      $scope.displayCtrl = displayController;
+      $scope.inputCtrl = userInputController;
+      $scope.state = $scope.states.WAIT;
+      var request = {
+        'content': userInputController.content,
+        'options': userInputController.selection()
+      };
+      $http({
+        url: "http://jiemei.cs.dal.ca:8080/mibio-api-1.0/services/corr",
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        data: request
+      }).success(function(data, status, headers, config) {
+        $scope.response = data;
+        console.log($scope.response);
+        $scope.responsed(data);
+        HoldOn.close();
+      }).error(function(data, status, headers, config) {
+        alert('error');
+      });
     };
-    this.responsed = function() {
-      var errors = RESPONSE.errors;
+    $scope.responsed = function(response) {
+      $scope.displayCtrl.init($scope.inputCtrl.content, response['errors'])
+      var errors = response.errors;
       for (var i = 0; i < errors.length; i++) {
         var cands = errors[i].candidates;
         for (var j = 0; j < cands.length; j++) {
@@ -99,10 +136,10 @@ var RESPONSE = {
           errors[i].display = errors[i].name;
         }
       }
-      this.state = this.states.PROCESSED;
+      $scope.state = $scope.states.PROCESSED;
     };
     this.done = function() {
-      this.state = this.states.READY;
+      $scope.state = $scope.states.READY;
     };
   });
 
@@ -120,17 +157,29 @@ var RESPONSE = {
     ];
     this.read = function($fileContent){
       this.content = $fileContent;
-      console.log($fileContent);
+      // console.log($fileContent);
     }
     this.togglePanel = function(){
       this.show = (this.show === true ? false : true);
       this.label = (this.show === true ? 'Correction components' : 'Advanced options');
     };
+    this.selection = function(){
+      return [
+        this.components[0].selected,
+        this.components[1].selected,
+        this.components[2].selected,
+        this.components[4].selected
+      ];
+    }
   });
 
   app.controller('DisplayController', function() {
-    this.content = REQUEST.content;
-    this.errors = RESPONSE.errors;
+    this.inited = false;
+    this.init = function(content, errors) {
+      this.content = content;
+      this.errors = errors;
+      this.inited = true;
+    };
     this.toHtml = function($scope, $sce) {
       var lines = this.content.split('\n');
       var html = '<p>' + lines.join('</p><p>') + '</p>';
@@ -143,9 +192,15 @@ var RESPONSE = {
       }
     };
     this.numErrors = function() {
+      if (! this.inited) {
+        return 0;
+      }
       return this.errors.length;
     };
     this.numChecked = function() {
+      if (! this.inited) {
+        return 0;
+      }
       var num = 0;
       for (var i = 0; i < this.errors.length; i++) {
         if (this.errors[i].state === 'checked') {
@@ -210,6 +265,7 @@ var RESPONSE = {
       if (idx > 0) {
         str = this.errors[idx - 1].position + this.errors[idx - 1].name.length;
       }
+      console.log(this.content.substring(str, end));
       return this.content.substring(str, end);
     };
     this.afterError = function(idx) {
@@ -221,6 +277,7 @@ var RESPONSE = {
       if (idx < this.errors.length - 1) {
         end = this.errors[idx + 1].position;
       }
+      console.log(this.content.substring(str, end));
       return this.content.substring(str, end);
     };
   });

@@ -1,5 +1,7 @@
 package edu.dal.mibio.corr.corrector;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Error
@@ -38,6 +40,36 @@ public class Error
   {
     for (Candidate cand : candidates)
       cand.confidence(cand.confidence() * weight);
+  }
+  
+  /**
+   * Normalize all the candidate confidence. The sum of all confidences should
+   * be 1 after normalization.
+   */
+  public Error normalize()
+  {
+    double sum = 0;
+    for (Candidate c : candidates)
+      sum += c.confidence();
+    for (Candidate c : candidates)
+      c.confidence(c.confidence() / sum);
+    return this;
+  }
+  
+  public Error sort()
+  {
+    Collections.sort(candidates, new Comparator<Candidate>(){
+      public int compare(Candidate s1, Candidate s2) {
+        if(s1.confidence() < s2.confidence()) {
+          return 1;
+        } else if(s1.confidence() == s2.confidence()) {
+          return 0; 
+        } else {
+          return -1;
+        }
+      }
+    });
+    return this;
   }
 
   @Override

@@ -9,7 +9,8 @@
     "bootstrap": "latest",
     "FileSaver": "latest",
     "angular": "latest",
-    "typed": "latest"
+    "typed": "latest",
+    "holdon": "sdkcarlos/HoldOn.js"
   },
   "ignore": [
     "**/.*",

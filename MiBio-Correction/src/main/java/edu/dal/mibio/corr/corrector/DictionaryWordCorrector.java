@@ -1,19 +1,19 @@
 package edu.dal.mibio.corr.corrector;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Reader;
 
-import edu.dal.mibio.corr.util.FileUtils;
+import edu.dal.mibio.corr.util.ReaderUtils;
 import gnu.trove.set.hash.THashSet;
 
 public abstract class DictionaryWordCorrector
     extends WordCorrector
 {
-  public DictionaryWordCorrector(File dictionary)
+  public DictionaryWordCorrector(Reader reader)
       throws FileNotFoundException, IOException
   {
-    this(FileUtils.readList(dictionary));
+    this(ReaderUtils.readList(reader));
   }
 
   private DictionaryWordCorrector(THashSet<String> dictionary)

@@ -16,6 +16,6 @@ public class UnigramErrorDetector
   @Override
   public boolean isError(Word word)
   {
-    return unigram.contains(word);
+    return !unigram.contains(word);
   }
 }

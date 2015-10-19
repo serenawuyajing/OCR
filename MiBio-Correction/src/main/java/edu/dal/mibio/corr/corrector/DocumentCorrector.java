@@ -99,55 +99,72 @@ public class DocumentCorrector
     return correct(correctors, words);
   }
   
-  private boolean validUniGram(String word, long count){
-    boolean validFlag= true;
-    if(word.length()==1) {
-      if(count<1000000000){
-        validFlag = false;
-      }
-    } else if(word.length() == 2) {
-      if(count< 10000000) {
-        validFlag = false;
-      }
-    } else if(word.length() == 3) {
-      if(count< 1000000) {
-        validFlag = false;
-      }
+  private boolean hasEnoughFreq(String word, long count) {
+    int threshold;
+    switch (word.length()) {
+      case 1:  threshold = 0; break;
+      case 2:  threshold = 10000000; break;
+      case 3:  threshold = 1000000; break;
+      case 4:  threshold = 100000; break;
+      case 5:  threshold = 100000; break;
+      case 6:  threshold = 10000; break;
+      case 7:  threshold = 10000; break;
+      case 8:  threshold = 10000; break;
+      case 9:  threshold = 10000; break;
+      case 10: threshold = 10000; break;
+      case 11: threshold = 1000; break;
+      case 12: threshold = 1000; break;
+      case 13: threshold = 1000; break;
+      case 14: threshold = 1000; break;
+      case 15: threshold = 1000; break;
+      case 16: threshold = 1000; break;
+      default: threshold = 200;
     }
-    else if(word.length() == 4) {
-      if(count< 100000) {
-        validFlag = false;
-      }
-    } else if(word.length() == 5) {
-      if(count< 100000) {
-        validFlag = false;
-      }
-    } else if(word.length() == 6) {
-      if(count< 10000) {
-        validFlag = false;
-      }
-    } else if(word.length() == 7) {
-      if(count< 10000) {
-        validFlag = false;
-      }
-    } else if(word.length() >=8 && word.length()<=10) {
-      if(count< 10000)
-      {
-        validFlag = false;
-      }
-    } else if(word.length() >=11 && word.length()<=15) {
-      if(count< 1000) {
-        validFlag = false;
-      }
-    } else if(word.length() >=16 && word.length()<=100) {
-      if(count< 200) {
-        validFlag = false;
-      }
+    if (count > threshold) {
+      return true;
     } else {
-      validFlag = true;
+      return false;
     }
-    return validFlag;
   }
+
+  private boolean validUniGram(String word, long count)
+  {
+    if(word.length() <= 1 || isRomanNumber(word)){
+      return true;
+    }
+    return hasEnoughFreq(word, count);
+  }
+
+	private boolean isRomanNumber(String word)
+	{
+		boolean romanflag = false;
+		switch(word) {
+			case "i":
+			case "ii":
+			case "iii":
+			case "iv":
+			case "v":
+			case "vi":
+			case "vii":
+			case "viii":
+			case "ix":
+			case "x":
+			case "xi":
+			case "xii":
+			case "xiii":
+			case "xiv":
+			case "xv":
+			case "xvi":
+			case "xvii":
+			case "xviii":
+			case "xix":
+				romanflag = true;
+				break;
+			default:
+				romanflag = false;
+		}
+		return romanflag;
+	}
   
   private void addToMap(Map<String, Word> map, WordContext context)
   {

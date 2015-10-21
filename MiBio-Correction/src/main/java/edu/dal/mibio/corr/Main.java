@@ -18,19 +18,29 @@ import edu.dal.mibio.corr.util.ResourceUtils;
 
 public class Main
 {
+  public static int GB = 1024*1024*1024;
   public static void main(String[] args)
       throws FileNotFoundException, IOException
   {
+	long start = System.currentTimeMillis();
     List<WordCorrector> corrs = new ArrayList<WordCorrector>();
-    corrs.add(new WikiWordCorrector());
-    corrs.add(new DomainWordCorrector());
-    corrs.add(new LexiconWordCorrector());
+//    corrs.add(new WikiWordCorrector());
+//    corrs.add(new DomainWordCorrector());
+//    corrs.add(new LexiconWordCorrector());
     corrs.add(new UnigramWordCorrector());
 
     List<Error> errors = new DocumentCorrector().correct(corrs,
-        ReaderUtils.read(new InputStreamReader(ResourceUtils.TEST_INPUT_SEGMENT)));
+        ReaderUtils.read(new InputStreamReader(ResourceUtils.TEST_INPUT)));
 
     for (Error e : errors)
       System.out.println(e);
+    
+    System.out.println("--- Memory Usage:");   
+    Runtime rt=Runtime.getRuntime( ); 
+    System.out.println("Total Memory= "+rt.totalMemory()/GB+" Free Memory= "
+    		+rt.freeMemory()/GB+" Used Memory= "+(rt.totalMemory()-rt.freeMemory())/GB);
+    long end = System.currentTimeMillis();
+    long runningTime = end -start;
+    System.out.println("Total running time is  "+ runningTime);
   }
 }

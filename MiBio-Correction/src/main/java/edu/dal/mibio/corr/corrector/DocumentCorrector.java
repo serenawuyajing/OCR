@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.dal.mibio.corr.util.CommonFuntions;
 import edu.dal.mibio.corr.util.Unigram;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
@@ -19,7 +20,7 @@ import gnu.trove.map.hash.TObjectLongHashMap;
 
 public class DocumentCorrector
 {
-  private static Pattern SPLIT_PATTERN = Pattern.compile("(^-*|)[^-]++(-*$|)");
+  private static Pattern SPLIT_PATTERN = Pattern.compile("(\\w+)");
 
   public List<Error> correct(List<WordCorrector> correctors, String content)
   {
@@ -47,7 +48,7 @@ public class DocumentCorrector
         /* Add token to context. */
         int idx = widx % 8;
         context[idx] = m.group();
-        position[idx] = token.beginPosition() + m.start();;
+        position[idx] = token.beginPosition() + m.start();
 
         if (widx > 3) {
 
@@ -89,7 +90,7 @@ public class DocumentCorrector
     TObjectLongHashMap<String> map = Unigram.getInstance().map();
     List<Word> words = new LinkedList<Word>(wordMap.values());
     for (int i = 0; i < words.size();) {
-      if (validUniGram(words.get(i).word(), map.get(words.get(i).word()))) {
+      if (CommonFuntions.validUniGram(words.get(i).word(), map.get(words.get(i).word()))) {
         words.remove(words.get(i));
       } else {
         i++;
@@ -98,73 +99,6 @@ public class DocumentCorrector
 
     return correct(correctors, words);
   }
-  
-  private boolean hasEnoughFreq(String word, long count) {
-    int threshold;
-    switch (word.length()) {
-      case 1:  threshold = 0; break;
-      case 2:  threshold = 10000000; break;
-      case 3:  threshold = 1000000; break;
-      case 4:  threshold = 100000; break;
-      case 5:  threshold = 100000; break;
-      case 6:  threshold = 10000; break;
-      case 7:  threshold = 10000; break;
-      case 8:  threshold = 10000; break;
-      case 9:  threshold = 10000; break;
-      case 10: threshold = 10000; break;
-      case 11: threshold = 1000; break;
-      case 12: threshold = 1000; break;
-      case 13: threshold = 1000; break;
-      case 14: threshold = 1000; break;
-      case 15: threshold = 1000; break;
-      case 16: threshold = 1000; break;
-      default: threshold = 200;
-    }
-    if (count > threshold) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  private boolean validUniGram(String word, long count)
-  {
-    if(word.length() <= 1 || isRomanNumber(word)){
-      return true;
-    }
-    return hasEnoughFreq(word, count);
-  }
-
-	private boolean isRomanNumber(String word)
-	{
-		boolean romanflag = false;
-		switch(word) {
-			case "i":
-			case "ii":
-			case "iii":
-			case "iv":
-			case "v":
-			case "vi":
-			case "vii":
-			case "viii":
-			case "ix":
-			case "x":
-			case "xi":
-			case "xii":
-			case "xiii":
-			case "xiv":
-			case "xv":
-			case "xvi":
-			case "xvii":
-			case "xviii":
-			case "xix":
-				romanflag = true;
-				break;
-			default:
-				romanflag = false;
-		}
-		return romanflag;
-	}
   
   private void addToMap(Map<String, Word> map, WordContext context)
   {

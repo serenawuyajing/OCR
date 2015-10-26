@@ -4,8 +4,15 @@ import gnu.trove.map.hash.TObjectLongHashMap;
 import gnu.trove.set.hash.THashSet;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class ReaderUtils
 {
@@ -53,4 +60,47 @@ public class ReaderUtils
     }
     return uniMap;
   }
+  
+  public static List<List<Integer>> readTabValue(String tabValueDir) throws IOException
+	{
+	   System.out.println("load tabValue File.....");
+	   List<File> tabValuefiles =  sortFiles(tabValueDir);
+	   
+	   List<List<Integer>> returnTabvalues = new ArrayList<List<Integer>>();
+	  
+	   for(int i=0;i<tabValuefiles.size();i++)
+	   {
+		 List<Integer> tabValues = new ArrayList<Integer>();
+	     try (
+		      BufferedReader br = new BufferedReader(new FileReader(tabValuefiles.get(i)));
+		    ){
+			  for (String line; (line = br.readLine()) != null;) {
+				 if(Integer.parseInt(line)<=Integer.MAX_VALUE)
+			     {
+				   tabValues.add(Integer.parseInt(line)); 
+			     } 
+		    }
+		 }
+	     returnTabvalues.add(tabValues);
+	   }
+	  
+	   System.out.println("load tabValue File done.....");
+	   return returnTabvalues;
+  }
+  
+  public static List<File> sortFiles(String fileDir)
+  {
+ 	 List<File> files = Arrays.asList(new File(fileDir).listFiles());  
+		 Collections.sort(files, new Comparator<File>() {  
+		        public int compare(File o1, File o2) {  
+		            if (o1.isDirectory() && o2.isFile())  
+		                return -1;  
+		            if (o1.isFile() && o2.isDirectory())  
+		                return 1;  
+		            return o1.getName().compareTo(o2.getName());  
+		        }  
+		    });
+		 return files;
+  }
+
 }

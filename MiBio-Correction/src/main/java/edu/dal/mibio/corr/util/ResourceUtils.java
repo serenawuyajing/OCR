@@ -10,6 +10,7 @@ public class ResourceUtils
   public static InputStream LEXICON_LIST = getResource("lexiconList.txt");
   public static InputStream WIKI_LIST = getResource("wiki.txt");
   public static InputStream UNIGRAM = getResource("unigram.txt");
+  public static String tabValueDir = "/users/grad/yajing/tab/tmpTabValue";
 
   /**
    * Get resource file from compiled path.

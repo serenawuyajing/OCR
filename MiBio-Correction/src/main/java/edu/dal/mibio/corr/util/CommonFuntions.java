@@ -1,9 +1,23 @@
 package edu.dal.mibio.corr.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CommonFuntions {
+	
+	public static final List<Character> ASCII_LIST = new ArrayList<Character>();
+	static {
+	    for(int i = 45; i < 58; i++)
+	      ASCII_LIST.add((char)i);
+	    for(int i = 65; i < 91; i++)
+	      ASCII_LIST.add((char)i);
+	    for(int i = 97; i < 123; i++)
+	      ASCII_LIST.add((char)i);
+	    ((ArrayList<Character>)ASCII_LIST).trimToSize();
+	 }
 	
 	public static boolean hasEnoughFreq(String word, long count) {
 	    int threshold;
@@ -75,4 +89,42 @@ public class CommonFuntions {
 	    }
 	    return hasEnoughFreq(word, count);
 	  }
+	 
+	  public static void oneDistanceWord(Set<String> distanceWords, String word, int distance)
+	  {
+	    if (distance-- > 0) {
+	      /* Deletion operation. */
+	      for (int i = 0;i < word.length(); i++) {
+	        StringBuffer e = new StringBuffer(word);
+	        String newWord = e.deleteCharAt(i).toString();
+	        if (newWord != "") {
+	          if(!distanceWords.contains(newWord)) {
+	            distanceWords.add(newWord);
+	            oneDistanceWord(distanceWords, newWord, distance);
+	          }
+	        }
+	      }
+	      /* Insertion operation. */
+	      for(int charIndex = 0; charIndex < ASCII_LIST.size(); charIndex++) {
+	        for(int i = 0; i< word.length() + 1; i++) {
+	          StringBuffer e = new StringBuffer(word);
+	          String newWord = e.insert(i, ASCII_LIST.get(charIndex)).toString();
+	          if(!distanceWords.contains(newWord)) {
+	            distanceWords.add(newWord);
+	            oneDistanceWord(distanceWords, newWord, distance);
+	          }
+	        }
+	      }
+	      /* Substitution operation. */
+	      for(int charIndex = 0; charIndex < ASCII_LIST.size(); charIndex++) {
+	        for(int i = 0;i < word.length(); i++) {
+	          String newWord = word.replace(word.charAt(i), ASCII_LIST.get(charIndex));
+	          if(!distanceWords.contains(newWord)) {
+	            distanceWords.add(newWord);
+	            oneDistanceWord(distanceWords, newWord, distance);
+	          }
+	        }
+	      } 
+	    }
+	  } 
 }

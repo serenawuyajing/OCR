@@ -42,7 +42,7 @@ public class Google5gramCorrector implements ErrorCorrector{
  		 {
 			 for(String dWord: dSet)
 		     {
-		    	if(map.containsKey(dWord))
+		    	if(map.containsKey(dWord) && CommonFuntions.hasEnoughFreq(dWord, map.get(dWord)))
 		    	{
 		    		calFrequencyConfidence(dWord,word.contexts().get(i));
 		    	} 
@@ -68,19 +68,19 @@ public class Google5gramCorrector implements ErrorCorrector{
 				{
 					for(int phIndex =0;phIndex<phs.size();phIndex++)
 					{
-						String candidate = PhUnigram.hash_IntString_unigram.get(phs.get(phIndex).getCandidate());
-						 
-						// calFrequency
-					    if(hash_can_frequency.containsKey(candidate))
+						if(j == phs.get(phIndex).getPosition())
 						{
-							Long tmpFreConfidence = hash_can_frequency.get(candidate)+phs.get(phIndex).getFrequency();
-							hash_can_frequency.put(candidate, tmpFreConfidence);
+							// calFrequency
+						    if(hash_can_frequency.containsKey(can))
+							{
+								Long tmpFreConfidence = hash_can_frequency.get(can)+phs.get(phIndex).getFrequency();
+								hash_can_frequency.put(can, tmpFreConfidence);
+							}
+							else
+							{
+								hash_can_frequency.put(can,phs.get(phIndex).getFrequency());
+							}
 						}
-						else
-						{
-							hash_can_frequency.put(candidate,phs.get(phIndex).getFrequency());
-						}
-					    
 					    // calCorherenceConfidence
 //						double gtmConfidence = 0l;
 //						try {

@@ -9,7 +9,8 @@ public class Error
   private String name;
   private long position;
   private List<Candidate> candidates;
-
+  private static final int CANDIDATE_NUM = 50;
+  
   public Error(WordContext context, List<Candidate> candidates)
   {
     this(context.word(), context.position(), candidates);
@@ -69,6 +70,9 @@ public class Error
         }
       }
     });
+    for (int i = candidates.size() - 1; i >= CANDIDATE_NUM; i--) {
+    	candidates.remove(i);
+    }
     return this;
   }
 

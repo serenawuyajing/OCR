@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import edu.dal.mibio.corr.corrector.DocumentCorrector;
 import edu.dal.mibio.corr.corrector.DomainWordCorrector;
@@ -29,11 +30,19 @@ public class Main
 //    corrs.add(new LexiconWordCorrector());
     corrs.add(new UnigramWordCorrector());
 
-    List<Error> errors = new DocumentCorrector().correct(corrs,
+    Map<String,List<Error>> errors = new DocumentCorrector().correct(corrs,
         ReaderUtils.read(new InputStreamReader(ResourceUtils.TEST_INPUT)));
 
-    for (Error e : errors)
-      System.out.println(e);
+    for (String type : errors.keySet())
+    {
+    	System.out.println(type);
+    	List<Error> errs = errors.get(type);
+    	for(Error e: errs)
+    	{
+    		System.out.println(e);
+    	}
+    }
+      
     
     System.out.println("--- Memory Usage:");   
     Runtime rt=Runtime.getRuntime( ); 

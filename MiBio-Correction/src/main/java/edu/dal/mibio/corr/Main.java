@@ -1,8 +1,10 @@
 package edu.dal.mibio.corr;
 
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +12,11 @@ import java.util.Map;
 import edu.dal.mibio.corr.corrector.DocumentCorrector;
 import edu.dal.mibio.corr.corrector.DomainWordCorrector;
 import edu.dal.mibio.corr.corrector.Error;
+import edu.dal.mibio.corr.corrector.Google5gram;
+import edu.dal.mibio.corr.corrector.Google5gramWordCorrector;
 import edu.dal.mibio.corr.corrector.LexiconWordCorrector;
+import edu.dal.mibio.corr.corrector.PhUnigram;
+import edu.dal.mibio.corr.corrector.PhashValues;
 import edu.dal.mibio.corr.corrector.UnigramWordCorrector;
 import edu.dal.mibio.corr.corrector.WikiWordCorrector;
 import edu.dal.mibio.corr.corrector.WordCorrector;
@@ -24,25 +30,34 @@ public class Main
       throws FileNotFoundException, IOException
   {
 	long start = System.currentTimeMillis();
-    List<WordCorrector> corrs = new ArrayList<WordCorrector>();
+   // List<WordCorrector> corrs = new ArrayList<WordCorrector>();
 //    corrs.add(new WikiWordCorrector());
 //    corrs.add(new DomainWordCorrector());
 //    corrs.add(new LexiconWordCorrector());
-    corrs.add(new UnigramWordCorrector());
+  //  corrs.add(new UnigramWordCorrector());
+   //   corrs.add(new Google5gramWordCorrector());
 
-    Map<String,List<Error>> errors = new DocumentCorrector().correct(corrs,
-        ReaderUtils.read(new InputStreamReader(ResourceUtils.TEST_INPUT)));
+    
+    //Map<String,List<Error>> errors = new DocumentCorrector().correct(corrs,
+    //    ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SIMPLE)));
 
-    for (String type : errors.keySet())
-    {
-    	System.out.println(type);
-    	List<Error> errs = errors.get(type);
-    	for(Error e: errs)
-    	{
-    		System.out.println(e);
-    	}
-    }
-      
+//    for (String type : errors.keySet())
+//    {
+//    	System.out.println(type);
+//    	List<Error> errs = errors.get(type);
+//    	for(Error e: errs)
+//    	{
+//    		System.out.println(e);
+//    	}
+//    }
+	 PhUnigram.buidUnigramHash(ResourceUtils.UNIGRAM);
+	 List<List<Integer>> tabValues = ReaderUtils.readTabValue(ResourceUtils.tabValueDir);
+	 String[] contexts = {"in","yellow","and","black"};
+	 List<PhashValues> phs = Google5gram.getPhValues("which", contexts, tabValues);
+	 for(PhashValues p: phs)
+	 {
+		System.out.println(p); 
+	 }
     
     System.out.println("--- Memory Usage:");   
     Runtime rt=Runtime.getRuntime( ); 

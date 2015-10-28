@@ -39,7 +39,17 @@ public class Google5gram {
 		List<PhashValues> phs = new ArrayList<PhashValues>();
 		int fileNumber = phValue/LEN_DB;
 		String fileStr = String.format("%04d",fileNumber);
-		String dbName = firstCharacter+"_"+fileStr;
+		int tmp = firstCharacter;
+		String dbName = "";
+		if(tmp >= 65 && tmp <= 90)
+		{
+			dbName = "U"+firstCharacter+"_"+fileStr;
+		}
+		else
+		{
+			dbName = firstCharacter+"_"+fileStr;
+		}
+		
 		Connection c = null;
 		try {
 			Class.forName("org.postgresql.Driver");
@@ -52,7 +62,6 @@ public class Google5gram {
 			{
 				PhashValues ph = new PhashValues(rs.getInt("candidate"),rs.getInt("position"),rs.getLong("frequency"));
 				phs.add(ph);
-				System.out.println(rs.getObject("position")+"\t"+rs.getObject("candidate")+"\t"+rs.getObject("frequency"));
 			}
 			
 			if(ps != null){
@@ -150,20 +159,29 @@ public class Google5gram {
 	}
 	
 	 public static List<PhashValues> getPhValues(String word,String[] contexts,List<List<Integer>> tabValues){
-		 int can = PhUnigram.hash_unigram_Dictionary.get(word);
 		 List<PhashValues> phs = new ArrayList<PhashValues>();
-		
-		 char firstCharacter = contexts[0].charAt(0);
-		 int[] contextsInt = Google5gram.transferContexts(contexts);
-		 if(contextsInt.length > 0)
-		{
-			int[] k = Lookupa.intToCharArray(contextsInt);
-			int phValue = calPhValue(k,firstCharacter,tabValues);
-			if(phValue != -1)
+		 int can = PhUnigram.hash_unigram_Dictionary.get(word);
+		 System.out.println(can);
+		 if(can != 0)
+		 {
+			 char firstCharacter = contexts[0].charAt(0);
+			 int[] contextsInt = Google5gram.transferContexts(contexts);
+			 for(int i=0;i<contextsInt.length;i++)
+			 {
+				 System.out.println(contextsInt[i]);
+			 }
+			 if(contextsInt.length > 0 && contextsInt != null)
 			{
-				phs = searchDB(firstCharacter,phValue,can);
-			}
-		}
+				int[] k = Lookupa.intToCharArray(contextsInt);
+				int phValue = calPhValue(k,firstCharacter,tabValues);
+				System.out.println(firstCharacter+" "+phValue+" "+can);
+				if(phValue != -1)
+				{
+					phs = searchDB(firstCharacter,phValue,can);
+				}
+			} 
+		 }
+		 
 		return phs;
 	 }
 }

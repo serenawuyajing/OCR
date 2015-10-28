@@ -44,7 +44,7 @@ public class Google5gramCorrector implements ErrorCorrector{
 		     {
 		    	if(map.containsKey(dWord) && CommonFuntions.hasEnoughFreq(dWord, map.get(dWord)))
 		    	{
-		    		calFrequencyConfidence(dWord,word.contexts().get(i));
+		    		candList = calFrequencyConfidence(dWord,word.contexts().get(i));
 		    	} 
 		     }
 			 erList.add(new Error(word.word(), word.contexts().get(i).position(), candList));

@@ -23,7 +23,7 @@ public class Google5gramDetector implements ErrorDetector {
 				if(contexts.length > 0)
 				{
 					List<PhashValues> phs = Google5gram.getPhValues(word.word(),contexts, tabValues);
-					if(phs.size() >= 0)
+					if(phs.size() > 0)
 					{
 					  for(int phIndex =0; phIndex< phs.size();phIndex++)
 					  {
@@ -34,7 +34,7 @@ public class Google5gramDetector implements ErrorDetector {
 							  break;
 						  }
 					  }	
-					}	
+					}
 				}
 				if(isErrorFlag == true)
 				{

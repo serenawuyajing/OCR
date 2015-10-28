@@ -4,12 +4,13 @@ import java.io.InputStream;
 
 public class ResourceUtils
 {
-  public static InputStream TEST_INPUT = getResource("test.in.txt");
-  public static InputStream TEST_INPUT_SEGMENT = getResource("test.in.seg.txt");
-  public static InputStream SPECIAL_LIST = getResource("specialList.txt");
-  public static InputStream LEXICON_LIST = getResource("lexiconList.txt");
-  public static InputStream WIKI_LIST = getResource("wiki.txt");
-  public static InputStream UNIGRAM = getResource("unigram.txt");
+  public static String TEST_INPUT = "test.in.txt";
+  public static String TEST_INPUT_SEGMENT = "test.in.seg.txt";
+  public static String TEST_INPUT_SIMPLE = "test.txt";
+  public static String SPECIAL_LIST = "specialList.txt";
+  public static String LEXICON_LIST = "lexiconList.txt";
+  public static String WIKI_LIST = "wiki.txt";
+  public static String UNIGRAM ="unigram.txt";
   public static String tabValueDir = "/users/grad/yajing/tab/tmpTabValue";
 
   /**
@@ -18,12 +19,12 @@ public class ResourceUtils
    * @param path  The resource path from compiled path.
    * @return The resource file.
    */
-  public static InputStream getResource(String path)
-  {
-    try {
-      return ResourceUtils.class.getClassLoader().getResourceAsStream(path);
-    } catch (NullPointerException e) {
-      throw new RuntimeException("Error: cannot find resource \"" + path + "\".");
-    }
-  }
+//  public static InputStream getResource(String path)
+//  {
+//    try {
+//      return ResourceUtils.class.getClassLoader().getResourceAsStream(path);
+//    } catch (NullPointerException e) {
+//      throw new RuntimeException("Error: cannot find resource \"" + path + "\".");
+//    }
+//  }
 }

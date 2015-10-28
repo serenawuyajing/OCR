@@ -97,6 +97,7 @@ public class DocumentCorrector
       }
     }
 
+    System.out.println(words);
     return correct(correctors, words);
   }
   
@@ -143,7 +144,7 @@ public class DocumentCorrector
 	      }
     }
       
-    if(errDicMap != null)
+    if(errDicMap.size() > 0)
     {
     	List<Error> errors = new ArrayList<Error>();
         for (Error e : errDicMap.values())
@@ -153,8 +154,6 @@ public class DocumentCorrector
         }
         errMap.put("typeDict", errors);
     }
-    
-     
     
     /* Sort errors by position. */
 //    Collections.sort(errors, new Comparator<Error>(){

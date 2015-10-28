@@ -12,7 +12,8 @@ public class PhUnigram {
 	public static TObjectIntHashMap<String> hash_unigram_Dictionary = new TObjectIntHashMap<String>();
 	public static TIntObjectHashMap<String> hash_IntString_unigram = new TIntObjectHashMap<String>();
 	
-	public static void buidUnigramHash(File unigramDictionaryFile) throws IOException{
+	public static void buidUnigramHash(String unigramDictionaryFile) throws IOException{
+		System.out.println("load ph unigram file.....");
 		FileReader fr = new FileReader(unigramDictionaryFile);
 		BufferedReader br = new BufferedReader(fr);
 		String line= "";
@@ -35,6 +36,7 @@ public class PhUnigram {
 				}
 			}
 		}
+		System.out.println("load ph unigram file done.....");
 		fr.close();
 		br.close();
     }

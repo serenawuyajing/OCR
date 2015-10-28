@@ -14,7 +14,7 @@ public class WikiWordCorrector
   public WikiWordCorrector()
       throws FileNotFoundException, IOException
   {
-    super(new InputStreamReader(ResourceUtils.WIKI_LIST));
+    super(new FileReader(ResourceUtils.WIKI_LIST));
   }
 
   public WikiWordCorrector(File file)

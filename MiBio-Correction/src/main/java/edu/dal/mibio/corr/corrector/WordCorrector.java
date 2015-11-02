@@ -32,9 +32,6 @@ public abstract class WordCorrector
     for (Word word : words)
       if (detector.isError(word))
         errors.addAll(corrector.correct(word));
-    double weight = weight(correctors);
-    for (Error e : errors)
-      e.weightConfidence(weight);
     return errors;
   }
   

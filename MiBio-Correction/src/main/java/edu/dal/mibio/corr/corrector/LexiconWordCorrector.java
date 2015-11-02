@@ -14,7 +14,7 @@ public class LexiconWordCorrector
   public LexiconWordCorrector()
       throws FileNotFoundException, IOException
   {
-    super(new InputStreamReader(ResourceUtils.LEXICON_LIST));
+    super(new FileReader(ResourceUtils.LEXICON_LIST));
   }
 
   public LexiconWordCorrector(File file)

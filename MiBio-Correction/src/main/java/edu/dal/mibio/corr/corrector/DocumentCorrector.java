@@ -22,7 +22,7 @@ public class DocumentCorrector
 {
   private static Pattern SPLIT_PATTERN = Pattern.compile("(\\w+)");
 
-  public List<Error> correct(List<WordCorrector> correctors, String content)
+  public Map<String,List<Error>> correct(List<WordCorrector> correctors, String content)
   {
     /* Store eight latest reading consecutive tokens and positions. */
     String[] context = new String[8];
@@ -109,46 +109,60 @@ public class DocumentCorrector
       map.put(tkn, new Word(tkn, context));
   }
   
-  private List<Error> correct(List<WordCorrector> correctors, List<Word> words)
+  private Map<String,List<Error>> correct(List<WordCorrector> correctors, List<Word> words)
   {
-    Map<String, Error> errMap = new HashMap<String, Error>();
-    for (WordCorrector cor : correctors) {
-      List<Error> errs = cor.correct(words, correctors);
-
-      /* Select the union of two error list. */
-      for (Error e : errs) {
-        String name = e.name();
-        if (errMap.containsKey(name)) {
-          /* Select the union of two candidate lists of the overlapping error. */
-          Error errInMap = errMap.get(name);
-          Map<String, Candidate> candSetInMap = new HashMap<String, Candidate>();
-          for (Candidate c : errInMap.candidates())
-            candSetInMap.put(c.name(), c);
-          for (Candidate c : e.candidates())
-            if (!candSetInMap.containsKey(c.name())) {
-              errInMap.add(c);
-            } else {
-              Candidate candInMap = candSetInMap.get(c.name());
-              candInMap.confidence(candInMap.confidence() + c.confidence());
-            }
-        } else {
-          errMap.put(name, e);
-        }
-      }
+	 Map<String,List<Error>> errMap = new HashMap<String,List<Error>>();
+     Map<String,Error> errDicMap = new HashMap<String,Error>();
+     for (WordCorrector cor : correctors) {
+	      List<Error> errs = cor.correct(words, correctors);
+	      if(cor.type().equals("typeDict"))
+	      {
+	    	 for (Error e : errs) {
+    	        String name = e.name();
+    	        if (errMap.containsKey(name)) {
+    	          /* Select the union of two candidate lists of the overlapping error. */
+    	          Error errInMap = errDicMap.get(name);
+    	          Map<String, Candidate> candSetInMap = new HashMap<String, Candidate>();
+    	          for (Candidate c : errInMap.candidates())
+    	            candSetInMap.put(c.name(), c);
+    	          for (Candidate c : e.candidates())
+    	            if (!candSetInMap.containsKey(c.name())) {
+    	              errInMap.add(c);
+    	            } else {
+    	              Candidate candInMap = candSetInMap.get(c.name());
+    	              candInMap.confidence(candInMap.confidence() + c.confidence());
+    	            }
+    	        } else {
+    	        	errDicMap.put(name, e);
+    	        }
+    	      } 
+	      }
+	      else
+	      {
+	    	  errMap.put(cor.type(), errs);
+	      }
     }
-    /* Confidence normalization. */
-    List<Error> errors = new ArrayList<Error>(errMap.values());
-    for (Error e : errors)
-      e.normalize().sort();
+      
+    if(errDicMap.size() > 0)
+    {
+    	List<Error> errors = new ArrayList<Error>();
+        for (Error e : errDicMap.values())
+        {
+        	 e.sort();
+        	 errors.add(e);
+        }
+        errMap.put("typeDict", errors);
+    }
     
     /* Sort errors by position. */
-    Collections.sort(errors, new Comparator<Error>(){
-      @Override
-      public int compare(Error e1, Error e2)
-      {
-        return (int)(e1.position() - e2.position());
-      }
-    });
-    return errors;
+//    Collections.sort(errors, new Comparator<Error>(){
+//      @Override
+//      public int compare(Error e1, Error e2)
+//      {
+//        return (int)(e1.position() - e2.position());
+//      }
+//    });
+    return errMap;
   }
+    
 }

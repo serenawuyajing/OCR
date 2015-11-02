@@ -18,7 +18,7 @@ public class Unigram
   private Unigram()
   {
     try {
-      map = ReaderUtils.readUnigram(new InputStreamReader(ResourceUtils.UNIGRAM));
+      map = ReaderUtils.readUnigram(new FileReader(ResourceUtils.UNIGRAM));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

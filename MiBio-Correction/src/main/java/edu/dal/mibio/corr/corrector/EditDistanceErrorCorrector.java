@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import edu.dal.mibio.corr.util.CommonFuntions;
+
 // TODO: Reformat EditDistanceCorrector.java
 abstract class EditDistanceErrorCorrector
   implements ErrorCorrector
@@ -17,17 +19,6 @@ abstract class EditDistanceErrorCorrector
 
   public static final long MAX_FREQ = 19401194714L;
 
-  private static final List<Character> ASCII_LIST = new ArrayList<Character>();
-  static {
-    for(int i = 45; i < 58; i++)
-      ASCII_LIST.add((char)i);
-    for(int i = 65; i < 91; i++)
-      ASCII_LIST.add((char)i);
-    for(int i = 97; i < 123; i++)
-      ASCII_LIST.add((char)i);
-    ((ArrayList<Character>)ASCII_LIST).trimToSize();
-  }
-
   abstract protected double score(String word, String candidate);
   
   abstract protected boolean contains(String word);
@@ -36,7 +27,7 @@ abstract class EditDistanceErrorCorrector
   public List<Error> correct(Word word)
   {
     Set<String> dSet = new HashSet<String>();
-    oneDistanceWord(dSet, word.word(), EDIT_DISTANCE);
+    CommonFuntions.oneDistanceWord(dSet, word.word(), EDIT_DISTANCE);
      
     /* Select all the dictionary containing words. */
     List<Candidate> candList = new ArrayList<Candidate>();
@@ -69,42 +60,4 @@ abstract class EditDistanceErrorCorrector
     }
     return erList;
   }
-
-  private void oneDistanceWord(Set<String> distanceWords, String word, int distance)
-  {
-    if (distance-- > 0) {
-      /* Deletion operation. */
-      for (int i = 0;i < word.length(); i++) {
-        StringBuffer e = new StringBuffer(word);
-        String newWord = e.deleteCharAt(i).toString();
-        if (newWord != "") {
-          if(!distanceWords.contains(newWord)) {
-            distanceWords.add(newWord);
-            oneDistanceWord(distanceWords, newWord, distance);
-          }
-        }
-      }
-      /* Insertion operation. */
-      for(int charIndex = 0; charIndex < ASCII_LIST.size(); charIndex++) {
-        for(int i = 0; i< word.length() + 1; i++) {
-          StringBuffer e = new StringBuffer(word);
-          String newWord = e.insert(i, ASCII_LIST.get(charIndex)).toString();
-          if(!distanceWords.contains(newWord)) {
-            distanceWords.add(newWord);
-            oneDistanceWord(distanceWords, newWord, distance);
-          }
-        }
-      }
-      /* Substitution operation. */
-      for(int charIndex = 0; charIndex < ASCII_LIST.size(); charIndex++) {
-        for(int i = 0;i < word.length(); i++) {
-          String newWord = word.replace(word.charAt(i), ASCII_LIST.get(charIndex));
-          if(!distanceWords.contains(newWord)) {
-            distanceWords.add(newWord);
-            oneDistanceWord(distanceWords, newWord, distance);
-          }
-        }
-      } 
-    }
-  } 
 }

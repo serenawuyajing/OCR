@@ -14,7 +14,7 @@ public class DomainWordCorrector
   public DomainWordCorrector()
       throws FileNotFoundException, IOException
   {
-    super(new InputStreamReader(ResourceUtils.SPECIAL_LIST));
+    super(new FileReader(ResourceUtils.SPECIAL_LIST));
   }
 
   public DomainWordCorrector(File file)

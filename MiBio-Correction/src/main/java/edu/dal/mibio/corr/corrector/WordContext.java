@@ -34,41 +34,6 @@ public class WordContext
       default: throw new IllegalArgumentException("Incorrect context index: " + index);
     }
   }
-  
-  public String[] get(int canPos, int ignorePos)
-  {
-	  switch(canPos) {
-      case 4:
-    	  switch(ignorePos){
-    	  case 3:  return new String[]{context[0], context[1], context[2]};
-          case 2:  return new String[]{context[0], context[1], context[3]};
-          case 1:  return new String[]{context[0], context[2], context[3]};
-          default: throw new IllegalArgumentException("Incorrect context ignorePos: " + ignorePos);
-    	  }
-      case 3:
-    	  switch(ignorePos){
-    	  case 3:  return new String[]{context[1], context[2], context[3]};
-          case 2:  return new String[]{context[1], context[2], context[5]};
-          case 1:  return new String[]{context[1], context[3], context[5]};
-          default: throw new IllegalArgumentException("Incorrect context ignorePos: " + ignorePos);
-    	  }	
-      case 2:
-    	  switch(ignorePos){
-    	  case 3:  return new String[]{context[2], context[3], context[5]};
-          case 2:  return new String[]{context[2], context[3], context[6]};
-          case 1:  return new String[]{context[2], context[5], context[6]};
-          default: throw new IllegalArgumentException("Incorrect context ignorePos: " + ignorePos);
-    	  }	
-      case 1:
-    	  switch(ignorePos){
-    	  case 3:  return new String[]{context[3], context[5], context[6]};
-          case 2:  return new String[]{context[3], context[5], context[7]};
-          case 1:  return new String[]{context[3], context[6], context[7]};
-          default: throw new IllegalArgumentException("Incorrect context ignorePos: " + ignorePos);
-    	  }	
-      default: throw new IllegalArgumentException("Incorrect context canPos: " + canPos);
-    }
-  }
 
   @Override
   public int compareTo(WordContext other)

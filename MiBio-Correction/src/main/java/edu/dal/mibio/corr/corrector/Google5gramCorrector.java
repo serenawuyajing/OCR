@@ -38,80 +38,143 @@ public class Google5gramCorrector implements ErrorCorrector{
 		 List<Error> erList = new ArrayList<Error>();
 		 Set<String> dSet = new HashSet<String>();
 		 List<Candidate> candList = new ArrayList<Candidate>();
-		 CommonFuntions.oneDistanceWord(dSet, word.word(),EDIT_DISTANCE);
 		 Set<String> candidates = new HashSet<String>();
 		 
 		 /* Select unigram containing words. */
 		 TObjectLongHashMap<String> map = Unigram.getInstance().map();
+		 CommonFuntions.oneDistanceWord(dSet, word.word(),EDIT_DISTANCE);
+		
 		 for(String dWord: dSet)
 	     {
-	    	if(map.containsKey(dWord) && CommonFuntions.hasEnoughFreq(dWord, map.get(dWord)))
+	    	if(map.containsKey(dWord))
 	    	{
 	    		candidates.add(dWord);
 	    	} 
 	     }
 	     
+		 System.out.println(System.currentTimeMillis()+"detect error word is "+word.word());
+		 
 		 System.out.println(System.currentTimeMillis()+" candidates number is "+dSet.size());
-		 for(int i=0;i<word.contexts().size();i++)
+	
+		 HashMap<String,Long> exactOrRelaxCans = getExactCandidates(word);
+		 
+		 System.out.println("after exact matching exactOrRelaxCans.size() is "+ exactOrRelaxCans.size());
+		 if(exactOrRelaxCans.size() == 0)
+		 {
+		    exactOrRelaxCans = getRelaxCandidates(word);
+		 }
+		 
+		 for(String key: exactOrRelaxCans.keySet()){
+				System.out.println(System.currentTimeMillis()+"exactOrRelaxCans is "
+		                               +key+" "+exactOrRelaxCans.get(key));
+		 }
+		 
+	     candList = calFrequencyConfidence(candidates,exactOrRelaxCans);
+	   
+    	 for(int i=0;i<word.contexts().size();i++)
  		 {
-		     candList = calFrequencyConfidence(candidates,word.contexts().get(i));
-		     if(candList.size() > 0)
-		     {
-		    	 erList.add(new Error(word.word(), word.contexts().get(i).position(), candList)); 
-		     }
-			
+    	  erList.add(new Error(word.word(), word.contexts().get(i).position(), candList)); 
  		 }
-	  
+	     
 		 return erList; 
 	 }
 	 
-	 private List<Candidate> calFrequencyConfidence(Set<String> dSet, WordContext wc){
+	 private HashMap<String,Long> getExactCandidates(Word word)
+	 {
+		 HashMap<String,Long> map = new HashMap<String,Long>();
+		 for(int i=0;i<word.contexts().size();i++)
+ 		 {
+			 for(int canpos=1;canpos<=4;canpos++)
+			{
+				 String[] contexts = word.contexts().get(i).get(canpos);
+				 if(contexts.length > 0)
+				 {
+					 String firstContext = Integer.toString(unigram.get(contexts[0]));
+					 List<String> emValues = Google5gram.getValues(relaxMatchingFile,firstContext);
+					 HashMap<String,Long> tmp = Google5gram.isExactMatch(emValues, contexts, canpos);
+					 if(tmp.size() > 0)
+					 {
+						 for(String key: tmp.keySet())
+						 {
+							 if(map.containsKey(key))
+							 {
+								 long frequency = map.get(key)+tmp.get(key);
+								 map.put(key, frequency);
+							 }
+							 else
+							 {
+								 map.put(key, tmp.get(key));
+							 }
+						 }
+					 }
+				 }
+			}
+ 		 }
+		 return map;
+	 }
+	 
+	 private HashMap<String,Long> getRelaxCandidates(Word word)
+	 {
+		 HashMap<String,Long> map = new HashMap<String,Long>();
+		 for(int i=0;i<word.contexts().size();i++)
+ 		 {
+			 for(int canpos=1;canpos<=4;canpos++)
+			{
+				 String[] contexts = word.contexts().get(i).get(canpos);
+				 if(contexts.length > 0)
+				 {
+					 String firstContext = Integer.toString(unigram.get(contexts[0]));
+					 List<String> emValues = Google5gram.getValues(relaxMatchingFile,firstContext);
+					 for(int ignorePos=1;ignorePos<=3;ignorePos++)
+					 {
+						 HashMap<String,Long> tmp = Google5gram.isRelaxMatch(emValues, contexts, canpos,ignorePos);
+						 if(tmp.size() > 0)
+						 {
+							 for(String key: tmp.keySet())
+							 {
+								 if(map.containsKey(key))
+								 {
+									 long frequency = map.get(key)+tmp.get(key);
+									 map.put(key, frequency);
+								 }
+								 else
+								 {
+									 map.put(key, tmp.get(key));
+								 }
+							 }
+						 } 
+					 }
+				 }
+			}
+ 		 }
+		 return map;
+	 }
+	 
+	 private List<Candidate> calFrequencyConfidence(Set<String> candidates,HashMap<String,Long> exactOrRelaxCans){
 		List<Candidate> cans = new ArrayList<Candidate>();
 		Map<String,Double> hash_freConfidence = new HashMap<String,Double>();
 		Map<String,Long> hash_can_frequency = new HashMap<String,Long>();
-	
-		for(String can: dSet)
+	 
+		for(String key:exactOrRelaxCans.keySet())
 		{
-			System.out.println(System.currentTimeMillis()+"Candidate: "+can);
-			for(int canpos=1;canpos<=4;canpos++)
+			if(candidates.contains(key))
 			{
-				String[] contexts = wc.get(canpos);
-				if(contexts.length > 0)
+				if(hash_can_frequency.containsKey(key))
 				{
-					String firstContext = Integer.toString(unigram.get(contexts[0]));
-					System.out.println(System.currentTimeMillis()+contexts[0]+"　"+firstContext);
-					List<String> emValues = Google5gram.getValues(relaxMatchingFile,firstContext);
-					long resFrequency =Google5gram.isExactMatch(emValues, contexts, can, canpos);
-					System.out.println(System.currentTimeMillis()+"Frequency: "+resFrequency);
-//					if(resFrequency == 0)
-//					{
-//						for(int ignorePos=0;ignorePos<3;ignorePos++)
-//						{
-//							resFrequency +=Google5gram.isRelaxMatch(emValues, contexts, can, canpos,ignorePos);
-//						}
-//					}
-					// calFrequency
-					if(resFrequency != 0)
-					{
-					  if(hash_can_frequency.containsKey(can))
-						{
-							Long tmpFreConfidence = hash_can_frequency.get(can)+resFrequency;
-							hash_can_frequency.put(can, tmpFreConfidence);
-						}
-						else
-						{
-							hash_can_frequency.put(can,resFrequency);
-						}
-					}
+					Long tmpFreConfidence = hash_can_frequency.get(key)+exactOrRelaxCans.get(key);
+					hash_can_frequency.put(key, tmpFreConfidence);
 				}
+				else
+				{
+					hash_can_frequency.put(key,exactOrRelaxCans.get(key));
+				} 
 			}
 		}
-        
+
 		for(String key: hash_can_frequency.keySet()){
 			System.out.println(System.currentTimeMillis()+key+" "+hash_can_frequency.get(key));
 		}
 		
-	   //calFrequencyAndSimilarityConfidence
 		double maxFrequency = getMaxFrequency(hash_can_frequency);
 		for(String key: hash_can_frequency.keySet())
 		{

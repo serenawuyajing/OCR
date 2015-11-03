@@ -26,9 +26,9 @@ abstract class EditDistanceErrorCorrector
   @Override
   public List<Error> correct(Word word)
   {
-    Set<String> dSet = new HashSet<String>();
+	Set<String> dSet = new HashSet<String>();
     CommonFuntions.oneDistanceWord(dSet, word.word(), EDIT_DISTANCE);
-     
+  
     /* Select all the dictionary containing words. */
     List<Candidate> candList = new ArrayList<Candidate>();
     for(String dWord: dSet)

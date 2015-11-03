@@ -1,6 +1,7 @@
 package edu.dal.mibio.corr.corrector;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 import gnu.trove.map.hash.TObjectIntHashMap;
@@ -30,8 +31,8 @@ public class Google5gramDetector implements ErrorDetector {
 				{
 					String firstContext = Integer.toString(unigram.get(contexts[0]));
 					List<String> emValues = Google5gram.getValues(relaxMatchingFile,firstContext);
-					long resFrequency = Google5gram.isExactMatch(emValues, contexts, word.word(), j);
-					if(resFrequency!= 0)
+					 HashMap<String,Long> map = Google5gram.isExactMatch(emValues, contexts, j);
+					if(map.containsKey(word.word()))
 					{
 						isErrorFlag = false;
 					}

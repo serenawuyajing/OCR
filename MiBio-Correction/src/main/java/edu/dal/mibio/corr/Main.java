@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.dal.mibio.corr.corrector.DocumentCorrector;
 import edu.dal.mibio.corr.corrector.DomainWordCorrector;
@@ -18,6 +20,7 @@ import edu.dal.mibio.corr.corrector.LexiconWordCorrector;
 import edu.dal.mibio.corr.corrector.UnigramWordCorrector;
 import edu.dal.mibio.corr.corrector.WikiWordCorrector;
 import edu.dal.mibio.corr.corrector.WordCorrector;
+import edu.dal.mibio.corr.util.CommonFuntions;
 import edu.dal.mibio.corr.util.ReaderUtils;
 import edu.dal.mibio.corr.util.ResourceUtils;
 
@@ -33,11 +36,11 @@ public class Main
 //    corrs.add(new DomainWordCorrector());
 //    corrs.add(new LexiconWordCorrector());
   //  corrs.add(new UnigramWordCorrector());
-      corrs.add(new Google5gramWordCorrector());
+    corrs.add(new Google5gramWordCorrector());
 
     
     Map<String,List<Error>> errors = new DocumentCorrector().correct(corrs,
-     ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SIMPLE)));
+     ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SEGMENT)));
 
     for (String type : errors.keySet())
     {
@@ -49,6 +52,7 @@ public class Main
     	}
     }
 	
+
     System.out.println("--- Memory Usage:");   
     Runtime rt=Runtime.getRuntime( ); 
     System.out.println("Total Memory= "+rt.totalMemory()/GB+" Free Memory= "

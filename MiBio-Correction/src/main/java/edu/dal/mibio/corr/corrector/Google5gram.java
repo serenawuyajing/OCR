@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Google5gram {
 	
@@ -40,8 +42,9 @@ public class Google5gram {
 		 return res;
 	}
 	
-	public static long isExactMatch(List<String> values, String[] contexts, String word, int position)
+	public static HashMap<String,Long> isExactMatch(List<String> values, String[] contexts, int position)
 	{
+		HashMap<String,Long> map = new HashMap<String,Long>();
 		long res = 0l;
 		String[] tmpContexts = new String[contexts.length+1];
 	
@@ -49,7 +52,7 @@ public class Google5gram {
 		{
 			tmpContexts[i]= contexts[i-1];
 		}
-		tmpContexts[position] = word;
+		tmpContexts[position] = null;
 		
 		for(int i=0;i<position;i++)
 		{
@@ -71,15 +74,15 @@ public class Google5gram {
 			if(flag == true)
 			{
 				res = Integer.parseInt(unigramWords[unigramWords.length-1]);
-				break;
+				map.put(unigramWords[position], res);
 			}
 		}
-		return res;
+		return map;
 	}
 	
-	public static long isRelaxMatch(List<String> values, String[] contexts, String word, int canpos,int ignorepos)
+	public static HashMap<String,Long> isRelaxMatch(List<String> values, String[] contexts,  int canpos,int ignorepos)
 	{
-		String[] tmpContexts = new String[contexts.length+1];
+		String[] tmpContexts = new String[contexts.length];
 		
 		for(int i=tmpContexts.length-1;i>ignorepos;i--)
 		{
@@ -92,8 +95,7 @@ public class Google5gram {
 			tmpContexts[i]=contexts[i];
 		}
 		
-		return isExactMatch(values,tmpContexts,word,canpos);
-		
+		return isExactMatch(values,tmpContexts,canpos);
 	}
 
 }

@@ -6,8 +6,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Google5gram {
 	
@@ -42,6 +44,29 @@ public class Google5gram {
 		 return res;
 	}
 	
+	public static void getFirstContexts(Set<String> firstContexts,String firstContext)
+	{
+        for(int i = 0;i < firstContext.length(); i++) {
+          char c = firstContext.charAt(i);
+          String newWord = "";
+          if(Character.isLowerCase(c))
+          {
+        	  newWord = firstContext.replace(c,Character.toUpperCase(c));  
+          }
+          else
+          {
+        	  newWord = firstContext.replace(c,Character.toLowerCase(c));
+          }
+     
+          if(!firstContexts.contains(newWord))
+          {
+        	  firstContexts.add(newWord); 
+        	  getFirstContexts(firstContexts,newWord);
+          }
+        }
+	      
+	}
+	
 	public static HashMap<String,Long> isExactMatch(List<String> values, String[] contexts, int position)
 	{
 		HashMap<String,Long> map = new HashMap<String,Long>();
@@ -65,7 +90,7 @@ public class Google5gram {
 			String[] unigramWords = values.get(i).split("\\s+");
 			for(int index=0;index<tmpContexts.length;index++)
 			{
-				if(!unigramWords[index].equals(tmpContexts[index]) && tmpContexts[index] != null)
+				if(!unigramWords[index].equalsIgnoreCase(tmpContexts[index]) && tmpContexts[index] != null)
 				{
 	                flag = false;
 	                break;

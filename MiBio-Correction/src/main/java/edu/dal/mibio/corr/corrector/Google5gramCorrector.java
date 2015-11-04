@@ -89,29 +89,39 @@ public class Google5gramCorrector implements ErrorCorrector{
 				 String[] contexts = word.contexts().get(i).get(canpos);
 				 if(contexts.length > 0)
 				 {
-					 String firstContext = Integer.toString(unigram.get(contexts[0]));
-					 List<String> emValues = Google5gram.getValues(relaxMatchingFile,firstContext);
-					 HashMap<String,Long> tmp = Google5gram.isExactMatch(emValues, contexts, canpos);
-					 if(tmp.size() > 0)
+					 Set<String> firstContexts = new HashSet<String>();
+					 Google5gram.getFirstContexts(firstContexts, contexts[0]);
+					 for(String firstContextStr: firstContexts)
 					 {
-						 for(String key: tmp.keySet())
+						 if(unigram.contains(firstContextStr))
 						 {
-							 if(map.containsKey(key))
+							 String firstContextInt = Integer.toString(unigram.get(firstContextStr));
+							 List<String> emValues = Google5gram.getValues(relaxMatchingFile,firstContextInt);
+							 HashMap<String,Long> tmp = Google5gram.isExactMatch(emValues, contexts, canpos);
+							 if(tmp.size() > 0)
 							 {
-								 long frequency = map.get(key)+tmp.get(key);
-								 map.put(key, frequency);
-							 }
-							 else
-							 {
-								 map.put(key, tmp.get(key));
-							 }
-						 }
-					 }
-				 }
+								 for(String key: tmp.keySet())
+								 {
+									 if(map.containsKey(key))
+									 {
+										 long frequency = map.get(key)+tmp.get(key);
+										 map.put(key, frequency);
+									 }
+									 else
+									 {
+										 map.put(key, tmp.get(key));
+									 }
+								 }
+							 } 
+						 } 
+					 }			
+			    }
 			}
  		 }
 		 return map;
 	 }
+	 
+	 
 	 
 	 private HashMap<String,Long> getRelaxCandidates(Word word)
 	 {
@@ -123,25 +133,33 @@ public class Google5gramCorrector implements ErrorCorrector{
 				 String[] contexts = word.contexts().get(i).get(canpos);
 				 if(contexts.length > 0)
 				 {
-					 String firstContext = Integer.toString(unigram.get(contexts[0]));
-					 List<String> emValues = Google5gram.getValues(relaxMatchingFile,firstContext);
-					 for(int ignorePos=1;ignorePos<=3;ignorePos++)
+					 Set<String> firstContexts = new HashSet<String>();
+					 Google5gram.getFirstContexts(firstContexts, contexts[0]);
+					 for(String firstContextStr: firstContexts)
 					 {
-						 HashMap<String,Long> tmp = Google5gram.isRelaxMatch(emValues, contexts, canpos,ignorePos);
-						 if(tmp.size() > 0)
+						 if(unigram.contains(firstContextStr))
 						 {
-							 for(String key: tmp.keySet())
+							 String firstContextInt = Integer.toString(unigram.get(firstContextStr));
+							 List<String> emValues = Google5gram.getValues(relaxMatchingFile,firstContextInt);
+							 for(int ignorePos=1;ignorePos<=3;ignorePos++)
 							 {
-								 if(map.containsKey(key))
+								 HashMap<String,Long> tmp = Google5gram.isRelaxMatch(emValues, contexts, canpos,ignorePos);
+								 if(tmp.size() > 0)
 								 {
-									 long frequency = map.get(key)+tmp.get(key);
-									 map.put(key, frequency);
-								 }
-								 else
-								 {
-									 map.put(key, tmp.get(key));
-								 }
-							 }
+									 for(String key: tmp.keySet())
+									 {
+										 if(map.containsKey(key))
+										 {
+											 long frequency = map.get(key)+tmp.get(key);
+											 map.put(key, frequency);
+										 }
+										 else
+										 {
+											 map.put(key, tmp.get(key));
+										 }
+									 }
+								 } 
+							 }  
 						 } 
 					 }
 				 }

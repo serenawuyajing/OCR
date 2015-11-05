@@ -1,14 +1,15 @@
 package edu.dal.mibio.corr.corrector;
 
+import java.util.Set;
+
 import edu.dal.mibio.corr.util.LCS;
-import gnu.trove.set.hash.THashSet;
 
 public class DictionaryErrorCorrector
   extends EditDistanceErrorCorrector
 {
-  private THashSet<String> dictionary;
+  private Set<String> dictionary;
 
-  protected DictionaryErrorCorrector(THashSet<String> dictionary)
+  protected DictionaryErrorCorrector(Set<String> dictionary)
   {
     this.dictionary = dictionary;
   }

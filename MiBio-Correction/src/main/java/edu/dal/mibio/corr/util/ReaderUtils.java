@@ -2,12 +2,13 @@ package edu.dal.mibio.corr.util;
 
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.map.hash.TObjectLongHashMap;
-import gnu.trove.set.hash.THashSet;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ReaderUtils
 {
@@ -26,10 +27,11 @@ public class ReaderUtils
     return sb.toString();
   }
 
-  public static THashSet<String> readList(Reader reader)
+  public static Set<String> readList(Reader reader)
       throws IOException
   {
-    THashSet<String> dic = new THashSet<String>();
+	System.out.println("load dictionary ....");
+    Set<String> dic = new HashSet<String>();
     try (
       BufferedReader br = new BufferedReader(reader);
     ){
@@ -38,6 +40,7 @@ public class ReaderUtils
       }
       br.close();
     }
+    System.out.println("load dictionary done....");
     return dic;
   }
 

@@ -61,7 +61,7 @@ public class Google5gramCorrector implements ErrorCorrector{
 		 System.out.println("after exact matching exactOrRelaxCans.size() is "+ exactOrRelaxCans.size());
 		 if(exactOrRelaxCans.size() == 0)
 		 {
-		    exactOrRelaxCans = getRelaxCandidates(word);
+			 exactOrRelaxCans = getRelaxCandidates(word);
 		 }
 		 
 		 for(String key: exactOrRelaxCans.keySet()){
@@ -90,7 +90,7 @@ public class Google5gramCorrector implements ErrorCorrector{
 				 if(contexts.length > 0)
 				 {
 					 Set<String> firstContexts = new HashSet<String>();
-					 Google5gram.getFirstContexts(firstContexts, contexts[0]);
+					 CommonFuntions.getFirstContexts(firstContexts, contexts[0]);
 					 for(String firstContextStr: firstContexts)
 					 {
 						 if(unigram.contains(firstContextStr))
@@ -134,7 +134,7 @@ public class Google5gramCorrector implements ErrorCorrector{
 				 if(contexts.length > 0)
 				 {
 					 Set<String> firstContexts = new HashSet<String>();
-					 Google5gram.getFirstContexts(firstContexts, contexts[0]);
+					 CommonFuntions.getFirstContexts(firstContexts, contexts[0]);
 					 for(String firstContextStr: firstContexts)
 					 {
 						 if(unigram.contains(firstContextStr))

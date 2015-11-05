@@ -22,6 +22,22 @@ public class Error
     this.candidates = candidates;
   }
   
+  @Override
+  public boolean equals(Object other)
+  {
+    if (other instanceof Error
+        && ((Error) other).name().equals(name)
+        && ((Error) other).position() == position) {
+      return true;
+    }
+    return false;
+  }
+  
+  public int hashCode(){
+	  return 0;
+  }
+  
+  
   public String name() { return name; }
 
   public final long position() { return position; }

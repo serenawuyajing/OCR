@@ -44,29 +44,6 @@ public class Google5gram {
 		 return res;
 	}
 	
-	public static void getFirstContexts(Set<String> firstContexts,String firstContext)
-	{
-        for(int i = 0;i < firstContext.length(); i++) {
-          char c = firstContext.charAt(i);
-          String newWord = "";
-          if(Character.isLowerCase(c))
-          {
-        	  newWord = firstContext.replace(c,Character.toUpperCase(c));  
-          }
-          else
-          {
-        	  newWord = firstContext.replace(c,Character.toLowerCase(c));
-          }
-     
-          if(!firstContexts.contains(newWord))
-          {
-        	  firstContexts.add(newWord); 
-        	  getFirstContexts(firstContexts,newWord);
-          }
-        }
-	      
-	}
-	
 	public static HashMap<String,Long> isExactMatch(List<String> values, String[] contexts, int position)
 	{
 		HashMap<String,Long> map = new HashMap<String,Long>();

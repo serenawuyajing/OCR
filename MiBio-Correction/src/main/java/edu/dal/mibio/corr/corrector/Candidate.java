@@ -17,8 +17,8 @@ public class Candidate
 
   void confidence(double value)
   {
-    if (value > 1 || value < 0)
-      throw new IllegalArgumentException("Invalid confidence value is given.");
+   // if (value > 1 || value < 0)
+     // throw new IllegalArgumentException("Invalid confidence value is given.");
     confidence = value;
   }
 

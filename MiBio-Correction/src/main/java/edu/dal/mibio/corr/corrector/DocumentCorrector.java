@@ -109,51 +109,151 @@ public class DocumentCorrector
       map.put(tkn, new Word(tkn, context));
   }
   
+  private  List<Error> combineDictErrors(List<List<Error>> errors)
+  {
+	  List<Error> errs = new ArrayList<Error>();
+	  HashMap<Error,Integer> map = new HashMap<Error,Integer>();
+	  double weight = 1.0/errors.size();
+	 
+	  for(int i=0;i<errors.size();i++)
+	  {
+		  for(int j=0;j<errors.get(i).size();j++)
+		  {
+			  if(map.containsKey(errors.get(i).get(j)))
+			  {
+				  int tmp = map.get(errors.get(i).get(j))+1;
+				  map.put(errors.get(i).get(j), tmp);
+			  }
+			  else
+			  {
+				  map.put(errors.get(i).get(j), 1);
+			  }
+			  
+			  if(!errs.contains(errors.get(i).get(j)))
+			  {
+				  errs.add(errors.get(i).get(j));
+			  }
+			  else
+			  {
+				  int index = errs.indexOf(errors.get(i).get(j));
+				  Map<String, Candidate> candSetInMap = new HashMap<String, Candidate>();
+				  List<Candidate> candidates = new ArrayList<Candidate>();
+				  
+				  if(errors.get(i).get(j).candidates().isEmpty())
+				  {
+					  continue;
+				  }
+				  
+				  if(errs.get(index).candidates().isEmpty())
+				  {
+					  candidates =new ArrayList<Candidate>(errors.get(i).get(j).candidates());
+				  }
+				  else
+				  {
+					  //candidates =  new ArrayList<Candidate>(errs.get(index).candidates());
+					  for (Candidate c : errs.get(index).candidates())
+		    	            candSetInMap.put(c.name(), c); 
+					  for(Candidate c: errors.get(i).get(j).candidates())
+					  {
+						 if(candSetInMap.containsKey(c.name()))
+						 {
+							  Candidate candInMap = new Candidate(c.name(),
+									  candSetInMap.get(c.name()).confidence() + c.confidence());
+							 // candidates.remove(c);
+		    	              //candidates.add(candInMap);
+							  candSetInMap.put(c.name(), candInMap);
+						 }
+						 else
+						 {
+							 Candidate can = new Candidate(c.name(),c.confidence());
+							 //candidates.add(can);
+							 candSetInMap.put(c.name(), can);
+						 }
+					  }
+					 
+                      for(Candidate c: candSetInMap.values())
+                      {
+                    	  candidates.add(c);
+                      }
+				  }
+				  errs.remove(index);
+				  errs.add(new Error(errors.get(i).get(j).name(),errors.get(i).get(j).position(),candidates)); 
+			  }
+		  }
+	  }
+	  for(int i=0;i<errs.size();i++)
+	  {
+		  if(map.containsKey(errs.get(i)))
+		  {
+			  if(map.get(errs.get(i)) != errors.size())
+			  {
+				  errs.remove(i);
+			  }
+		  }
+		  else
+		  {
+			  errs.remove(i);
+		  }
+	  }
+	  
+	  List<Error> res = new ArrayList<Error>();
+	  for(Error e: errs)
+	  {
+		  List<Candidate> cans = new ArrayList<Candidate>();
+		  for(Candidate c: e.candidates())
+		  {
+			  cans.add(new Candidate(c.name(),c.confidence()*weight));
+		  }
+		  res.add(new Error(e.name(),e.position(),cans));
+	  }
+	
+	  return res;
+  }
+  
   private Map<String,List<Error>> correct(List<WordCorrector> correctors, List<Word> words)
   {
 	 Map<String,List<Error>> errMap = new HashMap<String,List<Error>>();
-     Map<String,Error> errDicMap = new HashMap<String,Error>();
+	 List<List<Error>> dictErrors = new ArrayList<List<Error>>();
+	 
      for (WordCorrector cor : correctors) {
 	      List<Error> errs = cor.correct(words, correctors);
+	      
 	      if(cor.type().equals("typeDict"))
 	      {
-	    	 for (Error e : errs) {
-    	        String name = e.name();
-    	        if (errMap.containsKey(name)) {
-    	          /* Select the union of two candidate lists of the overlapping error. */
-    	          Error errInMap = errDicMap.get(name);
-    	          Map<String, Candidate> candSetInMap = new HashMap<String, Candidate>();
-    	          for (Candidate c : errInMap.candidates())
-    	            candSetInMap.put(c.name(), c);
-    	          for (Candidate c : e.candidates())
-    	            if (!candSetInMap.containsKey(c.name())) {
-    	              errInMap.add(c);
-    	            } else {
-    	              Candidate candInMap = candSetInMap.get(c.name());
-    	              candInMap.confidence(candInMap.confidence() + c.confidence());
-    	            }
-    	        } else {
-    	        	errDicMap.put(name, e);
-    	        }
-    	      } 
+	    	  dictErrors.add(errs);
+	    	  for(Error e:errs)
+	    	  {
+	    		  System.out.println(e);
+	    	  }
 	      }
 	      else
 	      {
 	    	  errMap.put(cor.type(), errs);
 	      }
     }
-      
-    if(errDicMap.size() > 0)
-    {
-    	List<Error> errors = new ArrayList<Error>();
-        for (Error e : errDicMap.values())
-        {
-        	 e.sort();
-        	 errors.add(e);
-        }
-        errMap.put("typeDict", errors);
-    }
-    
+     if(dictErrors.size() > 0)
+     {
+    	 List<Error> errs= combineDictErrors(dictErrors); 
+    	 List<Error> errors = new ArrayList<Error>();
+    	 for (Error e : errs)
+    	 {
+    		 e.sort();
+    		 errors.add(e);
+    	 }
+    	 errMap.put("typeDict", errors);
+     }
+     
+//    if(errDicMap.size() > 0)
+//    {
+//    	List<Error> errors = new ArrayList<Error>();
+//        for (Error e : errDicMap.values())
+//        {
+//        	 e.sort();
+//        	 errors.add(e);
+//        }
+//        errMap.put("typeDict", errors);
+//    }
+//    
     /* Sort errors by position. */
 //    Collections.sort(errors, new Comparator<Error>(){
 //      @Override

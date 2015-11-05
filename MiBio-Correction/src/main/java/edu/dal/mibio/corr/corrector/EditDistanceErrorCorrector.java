@@ -28,6 +28,8 @@ abstract class EditDistanceErrorCorrector
   {
 	Set<String> dSet = new HashSet<String>();
     CommonFuntions.oneDistanceWord(dSet, word.word(), EDIT_DISTANCE);
+    
+    System.out.println(System.currentTimeMillis()+":"+word.word()+" after edit distance "+dSet.size());
   
     /* Select all the dictionary containing words. */
     List<Candidate> candList = new ArrayList<Candidate>();

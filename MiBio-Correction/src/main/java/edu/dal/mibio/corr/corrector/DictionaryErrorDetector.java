@@ -1,15 +1,17 @@
 package edu.dal.mibio.corr.corrector;
 
-import gnu.trove.set.hash.THashSet;
+import java.util.HashSet;
+import java.util.Set;
 
+import edu.dal.mibio.corr.util.CommonFuntions;
 
 public class DictionaryErrorDetector
     implements ErrorDetector
 {
 	
-  private THashSet<String> dictionary;
+  private Set<String> dictionary;
   
-  public DictionaryErrorDetector(THashSet<String> dictionary)
+  public DictionaryErrorDetector(Set<String> dictionary)
   {
     this.dictionary = dictionary;
   }
@@ -17,6 +19,19 @@ public class DictionaryErrorDetector
   @Override
   public boolean isError(Word word)
   {
-    return !dictionary.contains(word);
+	System.out.println(System.currentTimeMillis()+" detect start....");
+	boolean isErrorFlag = true;
+	Set<String> posWords = new HashSet<String>();
+	CommonFuntions.getFirstContexts(posWords, word.word());
+	for(String posWord: posWords)
+	{
+		if(dictionary.contains(posWord))
+		{
+			isErrorFlag = false;
+			break;
+		}
 	}
+	System.out.println(System.currentTimeMillis()+" detect end....");
+    return isErrorFlag;
+  }
 }

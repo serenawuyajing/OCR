@@ -11,9 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-
 import edu.dal.mibio.corr.corrector.Candidate;
 import edu.dal.mibio.corr.corrector.DocumentCorrector;
 import edu.dal.mibio.corr.corrector.DomainWordCorrector;
@@ -36,43 +33,52 @@ public class Main
   {
 	 long start = System.currentTimeMillis();
      List<WordCorrector> corrs = new ArrayList<WordCorrector>();
-    // corrs.add(new WikiWordCorrector());
-     //corrs.add(new DomainWordCorrector());
-     //corrs.add(new LexiconWordCorrector());
+     corrs.add(new WikiWordCorrector());
+     corrs.add(new DomainWordCorrector());
+     corrs.add(new LexiconWordCorrector());
   //  corrs.add(new UnigramWordCorrector());
-     corrs.add(new Google5gramWordCorrector());
+    // corrs.add(new Google5gramWordCorrector());
 
     
     Map<String,List<Error>> errors = new DocumentCorrector().correct(corrs,
      ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SIMPLE)));
     
-    List<Error> errs = new ArrayList<Error>();
-    for(Error e: errors.get("type5grams"))
-    {
-    	if(e.candidates().size() == 0)
-    	{
-    		if(errors.get("typeDict").contains(e))
-    		{
-    			int index = errors.get("typeDict").indexOf(e);
-    			errs.add(errors.get("typeDict").get(index));
-    		}
-    		else
-    		{
-    			errs.add(e);
-    		}
-    	}
-    	else
-    	{
-    		errs.add(e);
-    	}
-    }
+//    List<Error> errs = new ArrayList<Error>();
+//    for(Error e: errors.get("type5grams"))
+//    {
+//    	if(e.candidates().size() == 0)
+//    	{
+//    		if(errors.get("typeDict").contains(e))
+//    		{
+//    			int index = errors.get("typeDict").indexOf(e);
+//    			errs.add(errors.get("typeDict").get(index));
+//    		}
+//    		else
+//    		{
+//    			errs.add(e);
+//    		}
+//    	}
+//    	else
+//    	{
+//    		errs.add(e);
+//    	}
+//    }
 
-	for(Error e: errs)
+	for(Error e: errors.get("typeDict"))
 	{
 		System.out.println(e);
 	}
-	
-
+//	List<Error> errors = new ArrayList<Error>();
+//	List<Candidate> candidates = new ArrayList<Candidate>();
+//	candidates.add(new Candidate("which",1.0));
+//	candidates.add(new Candidate("white",0.5));
+//	errors.add(new Error("whichi",1,candidates));
+//	
+//	candidates = new ArrayList<Candidate>();
+//	candidates.add(new Candidate("which",1.0));
+//	errors.add(new Error("whichi",1,candidates));
+//	System.out.println(DocumentCorrector.combineDictErrors(errors, 2));
+	 
     System.out.println("--- Memory Usage:");   
     Runtime rt=Runtime.getRuntime( ); 
     System.out.println("Total Memory= "+rt.totalMemory()/GB+" Free Memory= "

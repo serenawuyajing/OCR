@@ -19,7 +19,6 @@ public class DictionaryErrorDetector
   @Override
   public boolean isError(Word word)
   {
-	System.out.println(System.currentTimeMillis()+" detect start....");
 	boolean isErrorFlag = true;
 	Set<String> posWords = new HashSet<String>();
 	CommonFuntions.getFirstContexts(posWords, word.word());
@@ -31,7 +30,6 @@ public class DictionaryErrorDetector
 			break;
 		}
 	}
-	System.out.println(System.currentTimeMillis()+" detect end....");
     return isErrorFlag;
   }
 }

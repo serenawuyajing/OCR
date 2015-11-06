@@ -18,7 +18,6 @@ public class Google5gramDetector implements ErrorDetector {
 	
 	public boolean isError(Word word)
 	{
-		 System.out.println("detect start..."+ System.currentTimeMillis());
 		 boolean isErrorFlag = true;
 		 for(int i=0;i<word.contexts().size();i++)
 		 {

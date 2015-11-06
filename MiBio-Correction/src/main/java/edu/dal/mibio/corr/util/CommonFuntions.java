@@ -1,6 +1,7 @@
 package edu.dal.mibio.corr.util;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -88,46 +89,53 @@ public class CommonFuntions {
 	    return hasEnoughFreq(word, count);
 	  }
 	 
-	  public static void oneDistanceWord(Set<String> distanceWords, String word, int distance)
+	 public static void oneDistanceWord(Set<String> distanceWords, Set<String> words, int distance)
 	  {
-	    if (distance-- > 0) {
-	      /* Deletion operation. */
-	      for (int i = 0;i < word.length(); i++) {
-	        StringBuffer e = new StringBuffer(word);
-	        String newWord = e.deleteCharAt(i).toString();
-	        if (newWord != "") {
-	        	 if(!distanceWords.contains(newWord))
-	        	 {
-	        		 distanceWords.add(newWord); 
-	        	 }
-	            oneDistanceWord(distanceWords, newWord, distance);
-	        }
-	      }
-	      /* Insertion operation. */
-	      for(int charIndex = 0; charIndex < ASCII_LIST.size(); charIndex++) {
-	        for(int i = 0; i< word.length() + 1; i++) {
-	          StringBuffer e = new StringBuffer(word);
-	          String newWord = e.insert(i, ASCII_LIST.get(charIndex)).toString();
-	          if(!distanceWords.contains(newWord))
-	          {
-	        	  distanceWords.add(newWord);  
-	          }
-	           oneDistanceWord(distanceWords, newWord, distance);
-	        }
-	      }
-	      /* Substitution operation. */
-	      for(int charIndex = 0; charIndex < ASCII_LIST.size(); charIndex++) {
-	        for(int i = 0;i < word.length(); i++) {
-	          String newWord = word.replace(word.charAt(i), ASCII_LIST.get(charIndex));
-	          if(!distanceWords.contains(newWord))
-	          {
-	        	  distanceWords.add(newWord);  
-	          }
-	           oneDistanceWord(distanceWords, newWord, distance);
-	        }
-	      } 
-	    }
+		  if (distance-- > 0) {
+		    for(String word: words)
+			{
+			      /* Deletion operation. */
+			      for (int i = 0;i < word.length(); i++) {
+			        StringBuffer e = new StringBuffer(word);
+			        String newWord = e.deleteCharAt(i).toString();
+			        if (newWord != "") {
+			        	 if(!distanceWords.contains(newWord))
+			        	 {
+			        		 distanceWords.add(newWord); 
+			        	 }
+			           
+			        }
+			      }
+			      /* Insertion operation. */
+			      for(int charIndex = 0; charIndex < ASCII_LIST.size(); charIndex++) {
+			        for(int i = 0; i< word.length() + 1; i++) {
+			          StringBuffer e = new StringBuffer(word);
+			          String newWord = e.insert(i, ASCII_LIST.get(charIndex)).toString();
+			          if(!distanceWords.contains(newWord))
+			          {
+			        	  distanceWords.add(newWord);
+			          }
+			          
+			        }
+			      }
+			      /* Substitution operation. */
+			      for(int charIndex = 0; charIndex < ASCII_LIST.size(); charIndex++) {
+			        for(int i = 0;i < word.length(); i++) {
+			          String newWord = word.replace(word.charAt(i), ASCII_LIST.get(charIndex));
+			          if(!distanceWords.contains(newWord))
+			          {
+			        	  distanceWords.add(newWord);  
+			          }
+			          
+			        }
+			      } 
+			  }
+		   Set<String> tmpNewWords = new HashSet<String>(distanceWords);
+		   oneDistanceWord(distanceWords, tmpNewWords, distance); 
+		 }
+		 
 	  } 
+	
 	  
 	  public static void getFirstContexts(Set<String> firstContexts,String firstContext)
 	  {

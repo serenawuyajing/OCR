@@ -221,10 +221,6 @@ public class DocumentCorrector
 	      if(cor.type().equals("typeDict"))
 	      {
 	    	  dictErrors.add(errs);
-	    	  for(Error e:errs)
-	    	  {
-	    		  System.out.println(e);
-	    	  }
 	      }
 	      else
 	      {

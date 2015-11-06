@@ -34,15 +34,17 @@ public class Google5gramCorrector implements ErrorCorrector{
 	 }
 	 
 	 public List<Error> correct(Word word){
-		 System.out.println(System.currentTimeMillis()+" correct start...");
 		 List<Error> erList = new ArrayList<Error>();
 		 Set<String> dSet = new HashSet<String>();
 		 List<Candidate> candList = new ArrayList<Candidate>();
 		 Set<String> candidates = new HashSet<String>();
+		 HashMap<String,Long> exactOrRelaxCans = new HashMap<String,Long>();
 		 
 		 /* Select unigram containing words. */
 		 TObjectLongHashMap<String> map = Unigram.getInstance().map();
-		 CommonFuntions.oneDistanceWord(dSet, word.word(),EDIT_DISTANCE);
+		 Set<String> tmpWords = new HashSet<String>();
+		 tmpWords.add(word.word());
+		 CommonFuntions.oneDistanceWord(dSet,tmpWords,EDIT_DISTANCE);
 		
 		 for(String dWord: dSet)
 	     {
@@ -51,25 +53,24 @@ public class Google5gramCorrector implements ErrorCorrector{
 	    		candidates.add(dWord);
 	    	} 
 	     }
+		 
+//		 if(word.contexts().size() == 1)
+//		 {
+//			 exactOrRelaxCans = getExactAndRelaxCandidates(word);
+//		 }
+//		 else
+//		 {
+			// exactOrRelaxCans = getExactCandidates(word);
+			 
+//			 if(exactOrRelaxCans.size() == 0)
+//			 {
+				 exactOrRelaxCans = getRelaxCandidates(word);
+			// }
+			  
+		// }
 	     
-		 System.out.println(System.currentTimeMillis()+"detect error word is "+word.word());
-		 
-		 System.out.println(System.currentTimeMillis()+" candidates number is "+dSet.size());
-	
-		 HashMap<String,Long> exactOrRelaxCans = getExactCandidates(word);
-		 
-		 System.out.println("after exact matching exactOrRelaxCans.size() is "+ exactOrRelaxCans.size());
-		 if(exactOrRelaxCans.size() == 0)
-		 {
-			 exactOrRelaxCans = getRelaxCandidates(word);
-		 }
-		 
-		 for(String key: exactOrRelaxCans.keySet()){
-				System.out.println(System.currentTimeMillis()+"exactOrRelaxCans is "
-		                               +key+" "+exactOrRelaxCans.get(key));
-		 }
-		 
-	     candList = calFrequencyConfidence(candidates,exactOrRelaxCans);
+		 Map<String,Double> hash_freConfidence = calFrequencyConfidence(candidates,exactOrRelaxCans);
+	     candList = calConfidence(word.word(),hash_freConfidence);
 	   
     	 for(int i=0;i<word.contexts().size();i++)
  		 {
@@ -77,6 +78,64 @@ public class Google5gramCorrector implements ErrorCorrector{
  		 }
 	     
 		 return erList; 
+	 }
+	 
+	 private HashMap<String,Long> getExactAndRelaxCandidates(Word word)
+	 {
+		 HashMap<String,Long> map = new HashMap<String,Long>();
+		 for(int canpos=1;canpos<=4;canpos++)
+		{
+			 String[] contexts = word.contexts().get(0).get(canpos);
+			 if(contexts.length > 0)
+			 {
+				 Set<String> firstContexts = new HashSet<String>();
+				 CommonFuntions.getFirstContexts(firstContexts, contexts[0]);
+				 for(String firstContextStr: firstContexts)
+				 {
+					 if(unigram.contains(firstContextStr))
+					 {
+						 String firstContextInt = Integer.toString(unigram.get(firstContextStr));
+						 List<String> emValues = Google5gram.getValues(relaxMatchingFile,firstContextInt);
+						 HashMap<String,Long> tmp = Google5gram.isExactMatch(emValues, contexts, canpos);
+						 if(tmp.size() > 0)
+						 {
+							 for(String key: tmp.keySet())
+							 {
+								 if(map.containsKey(key))
+								 {
+									 long frequency = map.get(key)+tmp.get(key);
+									 map.put(key, frequency);
+								 }
+								 else
+								 {
+									 map.put(key, tmp.get(key));
+								 }
+							 }
+						 }
+						 for(int ignorePos=1;ignorePos<=3;ignorePos++)
+						 {
+							 tmp = Google5gram.isRelaxMatch(emValues, contexts, canpos,ignorePos);
+							 if(tmp.size() > 0)
+							 {
+								 for(String key: tmp.keySet())
+								 {
+									 if(map.containsKey(key))
+									 {
+										 long frequency = map.get(key)+tmp.get(key);
+										 map.put(key, frequency);
+									 }
+									 else
+									 {
+										 map.put(key, tmp.get(key));
+									 }
+								 }
+							 }  
+						 }
+					 } 
+				 }			
+		    }
+		}
+		 return map;
 	 }
 	 
 	 private HashMap<String,Long> getExactCandidates(Word word)
@@ -112,7 +171,7 @@ public class Google5gramCorrector implements ErrorCorrector{
 										 map.put(key, tmp.get(key));
 									 }
 								 }
-							 } 
+							 }
 						 } 
 					 }			
 			    }
@@ -168,45 +227,14 @@ public class Google5gramCorrector implements ErrorCorrector{
 		 return map;
 	 }
 	 
-	 private List<Candidate> calFrequencyConfidence(Set<String> candidates,HashMap<String,Long> exactOrRelaxCans){
+	 private List<Candidate> calConfidence(String word,Map<String,Double> hash_freConfidence){
 		List<Candidate> cans = new ArrayList<Candidate>();
-		Map<String,Double> hash_freConfidence = new HashMap<String,Double>();
-		Map<String,Long> hash_can_frequency = new HashMap<String,Long>();
-	 
-		for(String key:exactOrRelaxCans.keySet())
-		{
-			if(candidates.contains(key))
-			{
-				if(hash_can_frequency.containsKey(key))
-				{
-					Long tmpFreConfidence = hash_can_frequency.get(key)+exactOrRelaxCans.get(key);
-					hash_can_frequency.put(key, tmpFreConfidence);
-				}
-				else
-				{
-					hash_can_frequency.put(key,exactOrRelaxCans.get(key));
-				} 
-			}
-		}
-
-		for(String key: hash_can_frequency.keySet()){
-			System.out.println(System.currentTimeMillis()+key+" "+hash_can_frequency.get(key));
-		}
 		
-		double maxFrequency = getMaxFrequency(hash_can_frequency);
-		for(String key: hash_can_frequency.keySet())
-		{
-			//double simConfidence = LCS.lcs(word,key);
-			//hash_Sim_Confidence.put(key,simConfidence);
-			double tmpFreConfidence = hash_can_frequency.get(key)/maxFrequency;
-			hash_freConfidence.put(key, tmpFreConfidence);
-		}
-		
-		//sum all of the confidence
 		for(String key: hash_freConfidence.keySet())
 		{
-			//double sumConfidence = (hash_freConfidence.get(key)+hash_Sim_Confidence.get(key)+hash_Coherence_Confidence.get(key))/3;
-			Candidate c = new Candidate(key,hash_freConfidence.get(key));
+			double simConfidence = LCS.lcs(word,key);
+			double sumConfidence = hash_freConfidence.get(key)*0.1+simConfidence*0.9;
+			Candidate c = new Candidate(key,sumConfidence);
 			cans.add(c);
 		}
 		
@@ -231,6 +259,36 @@ public class Google5gramCorrector implements ErrorCorrector{
 		return cans;
 	 }
 	 
+	 private Map<String,Double> calFrequencyConfidence(Set<String> candidates,HashMap<String,Long> exactOrRelaxCans)
+	 {
+		Map<String,Double> hash_freConfidence = new HashMap<String,Double>();
+		Map<String,Long> hash_can_frequency = new HashMap<String,Long>();
+	 
+		for(String key:exactOrRelaxCans.keySet())
+		{
+			if(candidates.contains(key))
+			{
+				if(hash_can_frequency.containsKey(key))
+				{
+					Long tmpFreConfidence = hash_can_frequency.get(key)+exactOrRelaxCans.get(key);
+					hash_can_frequency.put(key, tmpFreConfidence);
+				}
+				else
+				{
+					hash_can_frequency.put(key,exactOrRelaxCans.get(key));
+				} 
+			}
+		}
+
+		double maxFrequency = getMaxFrequency(hash_can_frequency);
+		for(String key: hash_can_frequency.keySet())
+		{
+			double tmpFreConfidence = hash_can_frequency.get(key)/maxFrequency;
+			hash_freConfidence.put(key, tmpFreConfidence);
+		}
+		return hash_freConfidence;
+	 }
+	 
 	 public long getMaxFrequency(Map<String,Long> hash_can_frequency)
 	{
 		long maxFrequency = 0l;
@@ -244,34 +302,4 @@ public class Google5gramCorrector implements ErrorCorrector{
 		
 		return maxFrequency;
 	}
-	
-	  // calCorherenceConfidence
-//		double gtmConfidence = 0l;
-//		try {
-//			gtmConfidence = calCoherenceConfidence(candidate,contexts);
-//			} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			}
-//		if(hash_Coherence_Confidence.containsKey(candidate))
-//		{
-//			double tmpGtmConfidence = hash_Coherence_Confidence.get(candidate)+ gtmConfidence;
-//			hash_Coherence_Confidence.put(candidate, tmpGtmConfidence);
-//		}
-//		else
-//		{
-//			hash_Coherence_Confidence.put(candidate, gtmConfidence);
-//		}
-//	 public double calCoherenceConfidence(String candidate,String[] contexts) throws IOException 
-//	{
-//		Islam08 gtm = new Islam08(Paths.get(ResourceUtils.DATA_PATHNAME));
-//		double gtmConfidence = 0l;
-//		
-//		for(int i=0;i<contexts.length;i++)
-//		{
-//		   gtmConfidence += gtm.wordrt(candidate, contexts[i]);
-//		}
-//		
-//		return gtmConfidence/4;
-//	}
 }

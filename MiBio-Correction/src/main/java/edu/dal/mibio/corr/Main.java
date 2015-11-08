@@ -20,6 +20,8 @@ import edu.dal.mibio.corr.corrector.Google5gramWordCorrector;
 import edu.dal.mibio.corr.corrector.LexiconWordCorrector;
 import edu.dal.mibio.corr.corrector.UnigramWordCorrector;
 import edu.dal.mibio.corr.corrector.WikiWordCorrector;
+import edu.dal.mibio.corr.corrector.Word;
+import edu.dal.mibio.corr.corrector.WordContext;
 import edu.dal.mibio.corr.corrector.WordCorrector;
 import edu.dal.mibio.corr.util.CommonFuntions;
 import edu.dal.mibio.corr.util.ReaderUtils;
@@ -33,10 +35,10 @@ public class Main
   {
 	 long start = System.currentTimeMillis();
      List<WordCorrector> corrs = new ArrayList<WordCorrector>();
-  //  corrs.add(new UnigramWordCorrector());
+     //corrs.add(new UnigramWordCorrector());
      corrs.add(new Google5gramWordCorrector());
 
-    String content = ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SIMPLE));
+    String content = ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SEGMENT));
     
     Map<String,List<Error>> errors = new DocumentCorrector().correct(corrs,content);
     
@@ -50,7 +52,13 @@ public class Main
     {
     	if(e.candidates().size() == 0)
     	{
-    		 Map<String,List<Error>> dictErrors = new DocumentCorrector().correct(corrs,e.name());
+    		String[] contexts= {"","","","",e.name(),"","",""};
+    	     WordContext wordContext = new WordContext(0,contexts);
+    	     Word w = new Word(e.name(),wordContext);
+    		 List<Word> words = new ArrayList<Word>();
+    		 words.add(w);
+    		 Map<String,List<Error>> dictErrors = new DocumentCorrector().correct(corrs,words);
+    		 
     		 if(dictErrors.get("typeDict").size()> 0)
     		 {
     			 Error dictError = dictErrors.get("typeDict").get(0);
@@ -63,7 +71,7 @@ public class Main
     		errs.add(e);
     	}
     }
-
+    
 	for(Error e: errs)
 	{
 		System.out.println(e);

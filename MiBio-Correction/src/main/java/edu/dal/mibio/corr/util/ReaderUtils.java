@@ -42,7 +42,7 @@ public class ReaderUtils
   public static Set<String> readList(Reader reader)
       throws IOException
   {
-	System.out.println("load dictionary ....");
+	System.out.println(System.currentTimeMillis()+" load dictionary ....");
     Set<String> dic = new HashSet<String>();
     try (
       BufferedReader br = new BufferedReader(reader);
@@ -52,7 +52,7 @@ public class ReaderUtils
       }
       br.close();
     }
-    System.out.println("load dictionary done....");
+    System.out.println(System.currentTimeMillis()+" load dictionary done....");
     return dic;
   }
 

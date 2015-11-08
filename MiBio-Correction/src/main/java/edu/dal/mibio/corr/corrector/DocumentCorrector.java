@@ -193,13 +193,13 @@ public class DocumentCorrector
 	  }
 	  return errs;
   }
-  private Map<String,List<Error>> correct(List<WordCorrector> correctors, List<Word> words)
+  public Map<String,List<Error>> correct(List<WordCorrector> correctors, List<Word> words)
   {
 	 Map<String,List<Error>> errMap = new HashMap<String,List<Error>>();
 	 int dictNum=0;
 	 
      for (WordCorrector cor : correctors) {
-	      List<Error> errs = cor.correct(words, correctors);
+	      List<Error> errs = cor.correct(words);
 	      
 	      if(errs.size()>0)
 	      {

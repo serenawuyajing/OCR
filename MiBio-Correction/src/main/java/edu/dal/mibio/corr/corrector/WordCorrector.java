@@ -26,7 +26,7 @@ public abstract class WordCorrector
     typeSet.add(type);
   }
 
-  public List<Error> correct(List<Word> words, List<WordCorrector> correctors)
+  public List<Error> correct(List<Word> words)
   {
     List<Error> errors = new ArrayList<Error>();
     for (Word word : words)

@@ -12,19 +12,31 @@ import java.util.Set;
 
 public class ReaderUtils
 {
-  public static String read(Reader reader)
-      throws IOException
+	public static String read(Reader reader)
+		      throws IOException
   {
-    StringBuilder sb = new StringBuilder();
+    String prevLine="";
     try (
       BufferedReader br = new BufferedReader(reader);
     ){
       for (String line; (line = br.readLine()) != null;) {
-        sb.append(line).append('\n');
+    	  if(prevLine.length()>0){
+				String lastChar = prevLine.substring(prevLine.length()-2,prevLine.length()-1);
+				if(lastChar.equals("-")){
+					prevLine = prevLine.substring(0, prevLine.length()-1)+line;
+				}
+				else
+				{
+					prevLine =prevLine+"\n"+line;
+				}	
+			}
+			else{
+				prevLine = line;
+			}	
       }
       br.close();
     }
-    return sb.toString();
+    return prevLine;
   }
 
   public static Set<String> readList(Reader reader)

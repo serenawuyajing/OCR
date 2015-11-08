@@ -31,24 +31,52 @@ public class DocumentCorrector
       context[i] = "";
       position[i] = -1;
     }
-    
+    TObjectLongHashMap<String> map = Unigram.getInstance().map();
     Map<String, Word> wordMap = new HashMap<String, Word>();
+    int widx = 0;
+    int idx =0;
 
     /* Tokenize content using Peen Treebank. */
     PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<>(new StringReader(content),
         new CoreLabelTokenFactory(), "ptb3Escaping=false,normalizeOtherBrackets=false");
-    int widx = 0;
+   
     while (ptbt.hasNext()) {
       CoreLabel token = ptbt.next();
-
+      
+      if(token.toString().contains("-"))
+      {
+    	 String tmp = token.toString().replace("-", "");
+    	 if(CommonFuntions.validUniGram(tmp,map.get(tmp)))
+    	 {
+    		 idx = widx % 8;
+    		 context[idx] = tmp;
+    	     position[idx] = token.beginPosition();
+    	     if (widx > 3) {
+	          idx = (widx - 3) % 8;
+	          addToMap(wordMap, new WordContext(
+	              position[idx],
+	              context[(widx + 1) % 8],
+	              context[(widx + 2) % 8],
+	              context[(widx + 3) % 8],
+	              context[(widx + 4) % 8],
+	              context[idx],
+	              context[(widx - 2) % 8],
+	              context[(widx - 1) % 8],
+	              context[widx % 8]));
+    	     }
+    	     widx++;
+    	     continue;
+    	 }
+      }
+  
       /* Split if '-' in token. */
       Matcher m = SPLIT_PATTERN.matcher(token.toString());
       while(m.find()) {
         
         /* Add token to context. */
-        int idx = widx % 8;
-        context[idx] = m.group();
-        position[idx] = token.beginPosition() + m.start();
+    	 idx = widx % 8;
+ 		 context[idx] = m.group();
+ 	     position[idx] = token.beginPosition()+m.start(); 
 
         if (widx > 3) {
 
@@ -70,7 +98,7 @@ public class DocumentCorrector
     }
     /* Store the tailing tokens. */
     for (int i = 0; i < 3; widx++, i++) {
-      int idx = (widx + 5) % 8;
+      idx = (widx + 5) % 8;
       if (position[idx] >= 0) {
         addToMap(wordMap, new WordContext(
             position[idx],
@@ -87,8 +115,8 @@ public class DocumentCorrector
     }
 
     /* Filter words that exists in the unigram. */
-    TObjectLongHashMap<String> map = Unigram.getInstance().map();
     List<Word> words = new LinkedList<Word>(wordMap.values());
+    
     for (int i = 0; i < words.size();) {
       if (CommonFuntions.validUniGram(words.get(i).word(), map.get(words.get(i).word()))) {
         words.remove(words.get(i));
@@ -141,7 +169,7 @@ public class DocumentCorrector
 					 }
 					 else
 					 {
-						 candSetInMap.put(c.name(), new Candidate(c.name(),c.confidence()));
+						 candSetInMap.put(c.name(), new Candidate(c.name(),c.confidence()*weight));
 					 }
 				  }
 				  
@@ -173,25 +201,29 @@ public class DocumentCorrector
      for (WordCorrector cor : correctors) {
 	      List<Error> errs = cor.correct(words, correctors);
 	      
-	      if(cor.type().equals("typeDict"))
+	      if(errs.size()>0)
 	      {
-	    	  dictNum++;
-	    	  if(errMap.containsKey("typeDict"))
-	    	  {
-	    		  for(Error e: errs)
-	    		  {
-	    			  errMap.get("typeDict").add(e);
-	    		  }
-	    	  }
-	    	  else
-	    	  {
-	    		  errMap.put(cor.type(), errs); 
-	    	  }
-	    	  
-	      }
-	      else
-	      {
-	    	  errMap.put(cor.type(), errs);
+	    	  if(cor.type().equals("typeDict"))
+		      {
+		    	  dictNum++;
+		    	  if(errMap.containsKey("typeDict"))
+		    	  {
+		    		  for(Error e: errs)
+		    		  {
+		    			  errMap.get("typeDict").add(e);
+		    		  }
+		    		  
+		    	  }
+		    	  else
+		    	  {
+		    		  errMap.put(cor.type(), errs); 
+		    	  }
+		    	  
+		      }
+		      else
+		      {
+		    	  errMap.put(cor.type(), errs);
+		      }  
 	      }
     }
      

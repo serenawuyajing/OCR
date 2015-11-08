@@ -54,20 +54,20 @@ public class Google5gramCorrector implements ErrorCorrector{
 	    	} 
 	     }
 		 
-//		 if(word.contexts().size() == 1)
-//		 {
-//			 exactOrRelaxCans = getExactAndRelaxCandidates(word);
-//		 }
-//		 else
-//		 {
-			// exactOrRelaxCans = getExactCandidates(word);
+		 if(word.contexts().size() == 1)
+		 {
+			 exactOrRelaxCans = getExactAndRelaxCandidates(word);
+		 }
+		 else
+		 {
+			 exactOrRelaxCans = getExactCandidates(word);
 			 
-//			 if(exactOrRelaxCans.size() == 0)
-//			 {
+			 if(exactOrRelaxCans.size() == 0)
+			 {
 				 exactOrRelaxCans = getRelaxCandidates(word);
-			// }
+			 }
 			  
-		// }
+		 }
 	     
 		 Map<String,Double> hash_freConfidence = calFrequencyConfidence(candidates,exactOrRelaxCans);
 	     candList = calConfidence(word.word(),hash_freConfidence);
@@ -86,7 +86,7 @@ public class Google5gramCorrector implements ErrorCorrector{
 		 for(int canpos=1;canpos<=4;canpos++)
 		{
 			 String[] contexts = word.contexts().get(0).get(canpos);
-			 if(contexts.length > 0)
+			 if(contexts.length == 4)
 			 {
 				 Set<String> firstContexts = new HashSet<String>();
 				 CommonFuntions.getFirstContexts(firstContexts, contexts[0]);
@@ -146,7 +146,7 @@ public class Google5gramCorrector implements ErrorCorrector{
 			 for(int canpos=1;canpos<=4;canpos++)
 			{
 				 String[] contexts = word.contexts().get(i).get(canpos);
-				 if(contexts.length > 0)
+				 if(contexts.length == 4)
 				 {
 					 Set<String> firstContexts = new HashSet<String>();
 					 CommonFuntions.getFirstContexts(firstContexts, contexts[0]);
@@ -190,7 +190,7 @@ public class Google5gramCorrector implements ErrorCorrector{
 			 for(int canpos=1;canpos<=4;canpos++)
 			{
 				 String[] contexts = word.contexts().get(i).get(canpos);
-				 if(contexts.length > 0)
+				 if(contexts.length == 4)
 				 {
 					 Set<String> firstContexts = new HashSet<String>();
 					 CommonFuntions.getFirstContexts(firstContexts, contexts[0]);

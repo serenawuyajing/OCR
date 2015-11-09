@@ -101,7 +101,7 @@ public class CommonFuntions {
 			        if (newWord != "") {
 			        	 if(!distanceWords.contains(newWord))
 			        	 {
-			        		 distanceWords.add(newWord); 
+			        		 distanceWords.add(newWord);
 			        	 }
 			           
 			        }

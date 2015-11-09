@@ -22,7 +22,7 @@ public class DocumentCorrector
 {
   private static Pattern SPLIT_PATTERN = Pattern.compile("(\\w+)");
 
-  public Map<String,List<Error>> correct(List<WordCorrector> correctors, String content)
+  public List<Error> correct(List<WordCorrector> correctors, String content)
   {
     /* Store eight latest reading consecutive tokens and positions. */
     String[] context = new String[8];
@@ -38,15 +38,37 @@ public class DocumentCorrector
 
     /* Tokenize content using Peen Treebank. */
     PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<>(new StringReader(content),
-        new CoreLabelTokenFactory(), "ptb3Escaping=false,normalizeOtherBrackets=false");
+        new CoreLabelTokenFactory(), "ptb3Escaping=false,normalizeOtherBrackets=false,latexQuotes=false");
    
     while (ptbt.hasNext()) {
       CoreLabel token = ptbt.next();
       
+      /*for some special cases like compau}-*/
+      if(token.toString().equals(",") || token.toString().equals(".") || token.toString().equals(";"))
+      {
+    	 idx = widx % 8;
+ 		 context[idx] = token.toString();
+ 	     position[idx] = token.beginPosition();
+ 	     if (widx > 3) {
+	          idx = (widx - 3) % 8;
+	          addToMap(wordMap, new WordContext(
+	              position[idx],
+	              context[(widx + 1) % 8],
+	              context[(widx + 2) % 8],
+	              context[(widx + 3) % 8],
+	              context[(widx + 4) % 8],
+	              context[idx],
+	              context[(widx - 2) % 8],
+	              context[(widx - 1) % 8],
+	              context[widx % 8]));
+  	     }
+  	     widx++;
+      }
+      
       if(token.toString().contains("-"))
       {
     	 String tmp = token.toString().replace("-", "");
-    	 if(CommonFuntions.validUniGram(tmp,map.get(tmp)))
+    	 if(!tmp.isEmpty() && CommonFuntions.validUniGram(tmp,map.get(tmp)))
     	 {
     		 idx = widx % 8;
     		 context[idx] = tmp;
@@ -116,7 +138,6 @@ public class DocumentCorrector
 
     /* Filter words that exists in the unigram. */
     List<Word> words = new LinkedList<Word>(wordMap.values());
-    
     for (int i = 0; i < words.size();) {
       if (CommonFuntions.validUniGram(words.get(i).word(), map.get(words.get(i).word()))) {
         words.remove(words.get(i));
@@ -124,7 +145,7 @@ public class DocumentCorrector
         i++;
       }
     }
-
+    
     return correct(correctors, words);
   }
   
@@ -193,7 +214,8 @@ public class DocumentCorrector
 	  }
 	  return errs;
   }
-  public Map<String,List<Error>> correct(List<WordCorrector> correctors, List<Word> words)
+  
+  private List<Error> correct(List<WordCorrector> correctors, List<Word> words)
   {
 	 Map<String,List<Error>> errMap = new HashMap<String,List<Error>>();
 	 int dictNum=0;
@@ -238,7 +260,29 @@ public class DocumentCorrector
         }
         errMap.put("typeDict", errors);
      }
-   
+     
+     List<Error> errs = new ArrayList<Error>();
+     
+     if(!errMap.get("type5grams").isEmpty())
+     {
+    	 for(Error e: errMap.get("type5grams"))
+	    {
+	    	if(e.candidates().size() == 0)
+	    	{
+	    		 if(errMap.get("typeDict").contains(e))
+	    		 {
+	    			 int index = errMap.get("typeDict").indexOf(e);
+	        		 Error newErr = new Error(e.name(),e.position(),errMap.get("typeDict").get(index).candidates());
+	        		 errs.add(newErr);
+	    		 }    		
+	    	}
+	    	else
+	    	{
+	    		errs.add(e);
+	    	}
+	    }
+     }
+ 
     /* Sort errors by position. */
 //    Collections.sort(errors, new Comparator<Error>(){
 //      @Override
@@ -247,7 +291,7 @@ public class DocumentCorrector
 //        return (int)(e1.position() - e2.position());
 //      }
 //    });
-    return errMap;
+    return errs;
   }
     
 }

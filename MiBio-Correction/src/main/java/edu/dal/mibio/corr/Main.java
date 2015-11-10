@@ -41,7 +41,7 @@ public class Main
     // corrs.add(new UnigramWordCorrector());
      corrs.add(new Google5gramWordCorrector());
 
-    List<Error> errs = new DocumentCorrector().correct(corrs,ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SEGMENT)));
+    List<Error> errs = new DocumentCorrector().correct(corrs,ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SIMPLE)));
     
   
 	for(Error e: errs)

@@ -88,7 +88,7 @@ public class Google5gram {
 		
 		for(int i=tmpContexts.length-1;i>ignorepos;i--)
 		{
-			tmpContexts[i]= contexts[i-1];
+			tmpContexts[i]= contexts[i];
 		}
 		tmpContexts[ignorepos]=null;
 		

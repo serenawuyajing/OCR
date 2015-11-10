@@ -44,7 +44,7 @@ public class DocumentCorrector
       CoreLabel token = ptbt.next();
       
       /*for some special cases like compau}-*/
-      if(token.toString().equals(",") || token.toString().equals(".") || token.toString().equals(";"))
+      if(token.toString().equals(",") || token.toString().equals(".") || token.toString().equals(";") || token.toString().equals("\""))
       {
     	 idx = widx % 8;
  		 context[idx] = token.toString();
@@ -63,6 +63,7 @@ public class DocumentCorrector
 	              context[widx % 8]));
   	     }
   	     widx++;
+  	    continue;
       }
       
       if(token.toString().contains("-"))
@@ -139,12 +140,29 @@ public class DocumentCorrector
     /* Filter words that exists in the unigram. */
     List<Word> words = new LinkedList<Word>(wordMap.values());
     for (int i = 0; i < words.size();) {
-      if (CommonFuntions.validUniGram(words.get(i).word(), map.get(words.get(i).word()))) {
-        words.remove(words.get(i));
-      } else {
-        i++;
-      }
+    		 if (CommonFuntions.validUniGram(words.get(i).word(), map.get(words.get(i).word()))) {
+    		        words.remove(words.get(i));
+    		      } else {
+    		        i++;
+    		 }
     }
+    
+//    for(Word w: words)
+//    {
+//    	System.out.println(w.word()+":");
+//    	for(int i=0;i<w.contexts().size();i++)
+//    	{
+//    		for(int j=1;j<=4;j++)
+//    		{
+//    			String[] tmp = w.contexts().get(i).get(j);
+//    			for(int k=0;k<4;k++)
+//    			{
+//    				System.out.println(tmp[k]);	
+//    			}
+//    		}
+//    		
+//    	}
+//    }
     
     return correct(correctors, words);
   }
@@ -223,11 +241,15 @@ public class DocumentCorrector
      for (WordCorrector cor : correctors) {
 	      List<Error> errs = cor.correct(words);
 	      
+	      if(cor.type().equals("typeDict"))
+	      {
+	    	  dictNum++;
+	      }
+	      
 	      if(errs.size()>0)
 	      {
 	    	  if(cor.type().equals("typeDict"))
 		      {
-		    	  dictNum++;
 		    	  if(errMap.containsKey("typeDict"))
 		    	  {
 		    		  for(Error e: errs)
@@ -239,8 +261,7 @@ public class DocumentCorrector
 		    	  else
 		    	  {
 		    		  errMap.put(cor.type(), errs); 
-		    	  }
-		    	  
+		    	  }  
 		      }
 		      else
 		      {

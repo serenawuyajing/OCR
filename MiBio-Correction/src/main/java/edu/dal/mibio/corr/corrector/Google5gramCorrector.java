@@ -86,6 +86,7 @@ public class Google5gramCorrector implements ErrorCorrector{
 		 for(int canpos=1;canpos<=4;canpos++)
 		{
 			 String[] contexts = word.contexts().get(0).get(canpos);
+			
 			 if(contexts.length == 4)
 			 {
 				 Set<String> firstContexts = new HashSet<String>();

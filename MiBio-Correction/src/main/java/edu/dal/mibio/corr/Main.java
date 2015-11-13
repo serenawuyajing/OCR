@@ -18,6 +18,7 @@ import edu.dal.mibio.corr.corrector.Error;
 import edu.dal.mibio.corr.corrector.Google5gram;
 import edu.dal.mibio.corr.corrector.Google5gramWordCorrector;
 import edu.dal.mibio.corr.corrector.LexiconWordCorrector;
+import edu.dal.mibio.corr.corrector.PTBTokenization;
 import edu.dal.mibio.corr.corrector.UnigramWordCorrector;
 import edu.dal.mibio.corr.corrector.WikiWordCorrector;
 import edu.dal.mibio.corr.corrector.Word;
@@ -49,6 +50,23 @@ public class Main
 		System.out.println(e);
 	}
 
+//     Map<String, Word> words = PTBTokenization.getTokens(ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SIMPLE)));
+//     
+//     for(String key: words.keySet())
+//     {
+//        Word w = words.get(key);
+//       	System.out.print(w.word()+":");
+//       	for(int i=0;i<w.contexts().size();i++)
+//       	{
+//            System.out.println(" positions is "+w.contexts().get(i).position());
+//       		for(int j=1;j<=4;j++)
+//       		{
+//       			String[] tmp = w.contexts().get(i).get(j);
+//       			System.out.println(tmp[0]+" "+tmp[1]+" "+tmp[2]+" "+tmp[3]);	
+//       		}
+//       		
+//       	} 
+//     }
 	 
     System.out.println("--- Memory Usage:");   
     Runtime rt=Runtime.getRuntime( ); 

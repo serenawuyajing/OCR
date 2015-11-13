@@ -36,22 +36,20 @@ public class DocumentCorrector
     		 }
     }
     
-//    for(Word w: words)
-//    {
-//    	System.out.println(w.word()+":");
-//    	for(int i=0;i<w.contexts().size();i++)
-//    	{
-//    		for(int j=1;j<=4;j++)
-//    		{
-//    			String[] tmp = w.contexts().get(i).get(j);
-//    			for(int k=0;k<4;k++)
-//    			{
-//    				System.out.println(tmp[k]);	
-//    			}
-//    		}
-//    		
-//    	}
-//    }
+    for(Word w: words)
+    {
+    	System.out.println(w.word()+":");
+    	for(int i=0;i<w.contexts().size();i++)
+    	{
+    		System.out.println(" position is "+w.contexts().get(i).position());
+    		for(int j=1;j<=4;j++)
+    		{
+    			String[] tmp = w.contexts().get(i).get(j);
+    			System.out.println(tmp[0]+" "+tmp[1]+" "+tmp[2]+" "+tmp[3]);	
+    		}
+    		
+    	}
+    }
     
     return correct(correctors, words);
   }
@@ -166,25 +164,30 @@ public class DocumentCorrector
      
      List<Error> errs = new ArrayList<Error>();
      
-     if(!errMap.get("type5grams").isEmpty())
+     if(errMap.containsKey("type5grams"))
      {
-    	 for(Error e: errMap.get("type5grams"))
-	    {
-	    	if(e.candidates().size() == 0)
-	    	{
-	    		 if(errMap.get("typeDict").contains(e))
-	    		 {
-	    			 int index = errMap.get("typeDict").indexOf(e);
-	        		 Error newErr = new Error(e.name(),e.position(),errMap.get("typeDict").get(index).candidates());
-	        		 errs.add(newErr);
-	    		 }    		
-	    	}
-	    	else
-	    	{
-	    		errs.add(e);
-	    	}
-	    }
+    	 if(!errMap.get("type5grams").isEmpty())
+         {
+        	 for(Error e: errMap.get("type5grams"))
+    	    {
+    	    	if(e.candidates().size() == 0)
+    	    	{
+    	    		 if(errMap.get("typeDict").contains(e))
+    	    		 {
+    	    			 int index = errMap.get("typeDict").indexOf(e);
+    	        		 Error newErr = new Error(e.name(),e.position(),errMap.get("typeDict").get(index).candidates());
+    	        		 errs.add(newErr);
+    	    		 }    		
+    	    	}
+    	    	else
+    	    	{
+    	    		errs.add(e);
+    	    	}
+    	    }
+         }
+    	 
      }
+    
  
     /* Sort errors by position. */
     Collections.sort(errs, new Comparator<Error>(){

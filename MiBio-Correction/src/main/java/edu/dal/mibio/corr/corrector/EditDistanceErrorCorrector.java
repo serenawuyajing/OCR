@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.dal.mibio.corr.util.CommonFuntions;
+import edu.dal.mibio.corr.util.Unigram;
 
 // TODO: Reformat EditDistanceCorrector.java
 abstract class EditDistanceErrorCorrector
@@ -18,19 +19,24 @@ abstract class EditDistanceErrorCorrector
   private static final int CANDIDATE_NUM = 50;
 
   public static final long MAX_FREQ = 19401194714L;
+  
+  public static Set<String> dSet = new HashSet<String>();
 
   abstract protected double score(String word, String candidate);
   
   abstract protected boolean contains(String word);
+  
+  public static void getEditDistanceResult(String word)
+  {
+	  dSet = new HashSet<String>();
+	  Set<String> tmpWords = new HashSet<String>();
+	  tmpWords.add(word);
+	  CommonFuntions.oneDistanceWord(dSet,tmpWords,EDIT_DISTANCE);
+  }
    
   @Override
   public List<Error> correct(Word word)
   {
-	Set<String> dSet = new HashSet<String>();
-	Set<String> tmpWords = new HashSet<String>();
-	tmpWords.add(word.word());
-    CommonFuntions.oneDistanceWord(dSet,tmpWords,EDIT_DISTANCE);
-  
     /* Select all the dictionary containing words. */
     List<Candidate> candList = new ArrayList<Candidate>();
     for(String dWord: dSet)

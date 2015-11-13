@@ -30,8 +30,12 @@ public abstract class WordCorrector
   {
     List<Error> errors = new ArrayList<Error>();
     for (Word word : words)
-      if (detector.isError(word))
-        errors.addAll(corrector.correct(word));
+    {
+    	EditDistanceErrorCorrector.getEditDistanceResult(word.word());
+    	if (detector.isError(word))
+    	        errors.addAll(corrector.correct(word));
+    }
+     
     return errors;
   }
   

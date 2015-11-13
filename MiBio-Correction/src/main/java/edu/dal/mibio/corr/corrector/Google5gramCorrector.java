@@ -35,18 +35,14 @@ public class Google5gramCorrector implements ErrorCorrector{
 	 
 	 public List<Error> correct(Word word){
 		 List<Error> erList = new ArrayList<Error>();
-		 Set<String> dSet = new HashSet<String>();
 		 List<Candidate> candList = new ArrayList<Candidate>();
 		 Set<String> candidates = new HashSet<String>();
 		 HashMap<String,Long> exactOrRelaxCans = new HashMap<String,Long>();
 		 
 		 /* Select unigram containing words. */
 		 TObjectLongHashMap<String> map = Unigram.getInstance().map();
-		 Set<String> tmpWords = new HashSet<String>();
-		 tmpWords.add(word.word());
-		 CommonFuntions.oneDistanceWord(dSet,tmpWords,EDIT_DISTANCE);
-		
-		 for(String dWord: dSet)
+		 
+		 for(String dWord: EditDistanceErrorCorrector.dSet)
 	     {
 	    	if(map.containsKey(dWord))
 	    	{

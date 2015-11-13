@@ -18,34 +18,31 @@ public class Google5gramDetector implements ErrorDetector {
 	
 	public boolean isError(Word word)
 	{
+		 System.out.println("five gram detect start");
 		 boolean isErrorFlag = true;
 		 for(int i=0;i<word.contexts().size();i++)
 		 {
-			 isErrorFlag = true;
 			 for(int j=1;j<=4;j++)
 			 {
-				isErrorFlag = true;
 				String[] contexts = word.contexts().get(i).get(j);
 				if(contexts.length > 0)
 				{
 					String firstContext = Integer.toString(unigram.get(contexts[0]));
 					List<String> emValues = Google5gram.getValues(relaxMatchingFile,firstContext);
-					 HashMap<String,Long> map = Google5gram.isExactMatch(emValues, contexts, j);
+					HashMap<String,Long> map = Google5gram.isExactMatch(emValues, contexts, j);
 					if(map.containsKey(word.word()))
 					{
 						isErrorFlag = false;
+						break;
 					}
 				}
-				if(isErrorFlag == true)
-				{
-					break;
-				}
 			 }
-			 if(isErrorFlag == true)
+			 if(isErrorFlag == false)
 			{
 				break;
 			} 
 		 }
+		 System.out.println("five gram detect end");
 		 return isErrorFlag;
 	}
 

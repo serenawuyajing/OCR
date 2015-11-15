@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import edu.dal.mibio.corr.util.CommonFuntions;
-import edu.dal.mibio.corr.util.Unigram;
 
 // TODO: Reformat EditDistanceCorrector.java
 abstract class EditDistanceErrorCorrector

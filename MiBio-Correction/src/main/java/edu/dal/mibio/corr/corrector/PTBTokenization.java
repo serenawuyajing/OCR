@@ -16,7 +16,7 @@ import gnu.trove.map.hash.TObjectLongHashMap;
 
 public class PTBTokenization {
 
-	  private static Pattern SPLIT_PATTERN = Pattern.compile("(\\w+)[-./]");
+	  private static Pattern SPLIT_PATTERN = Pattern.compile("^\\w+[-./]");
 
 	  public static Map<String, Word> getTokens(String content,TObjectLongHashMap<String> map)
 	  {
@@ -46,10 +46,10 @@ public class PTBTokenization {
 	      {
 	    	  if(!(token.toString().equals(",") || token.toString().equals(".") 
 	    			  || token.toString().equals(":") || token.toString().equals("!") || token.toString().equals("?")
-	    			  || token.toString().equals("\"") || token.toString().equals("(") || token.toString().equals(")"))
+	    			  || token.toString().equals("\"") || token.toString().equals("(") || token.toString().equals(")") || token.toString().equals(";"))
 	    			  && !(prevToken.toString().equals(",") || prevToken.toString().equals(".") 
 	    	    			  || prevToken.toString().equals(":") || prevToken.toString().equals("!") || prevToken.toString().equals("?")
-	    	    			  || prevToken.toString().equals("\"") || prevToken.toString().equals("(") || prevToken.toString().equals(")")))
+	    	    			  || prevToken.toString().equals("\"") || prevToken.toString().equals("(") || prevToken.toString().equals(")") || prevToken.toString().equals(";")))
 	    	  {
 	    		  token.setBeginPosition(prevToken.beginPosition());
 	    		  if(proProcessTokens.containsKey(token.beginPosition()))

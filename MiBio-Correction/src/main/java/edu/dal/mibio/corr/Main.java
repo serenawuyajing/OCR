@@ -27,6 +27,7 @@ import edu.dal.mibio.corr.corrector.WordCorrector;
 import edu.dal.mibio.corr.util.CommonFuntions;
 import edu.dal.mibio.corr.util.ReaderUtils;
 import edu.dal.mibio.corr.util.ResourceUtils;
+import gnu.trove.map.hash.TObjectLongHashMap;
 
 public class Main
 {
@@ -40,9 +41,9 @@ public class Main
      corrs.add(new DomainWordCorrector());
      corrs.add(new LexiconWordCorrector());
     // corrs.add(new UnigramWordCorrector());
-     corrs.add(new Google5gramWordCorrector());
+    corrs.add(new Google5gramWordCorrector());
 
-    List<Error> errs = new DocumentCorrector().correct(corrs,ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SEGMENT)));
+    List<Error> errs = new DocumentCorrector().correct(corrs,ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SIMPLE)));
     
   
 	for(Error e: errs)
@@ -50,8 +51,8 @@ public class Main
 		System.out.println(e);
 	}
 
-//     Map<String, Word> words = PTBTokenization.getTokens(ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SIMPLE)));
-//     
+//     TObjectLongHashMap<String> map = new TObjectLongHashMap<String>();
+//     Map<String, Word> words = PTBTokenization.getTokens(ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SIMPLE)), map);
 //     for(String key: words.keySet())
 //     {
 //        Word w = words.get(key);

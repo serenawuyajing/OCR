@@ -1,6 +1,5 @@
 package edu.dal.mibio.corr.corrector;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,14 +7,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import edu.dal.mibio.corr.util.CommonFuntions;
 import edu.dal.mibio.corr.util.Unigram;
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.process.CoreLabelTokenFactory;
-import edu.stanford.nlp.process.PTBTokenizer;
 import gnu.trove.map.hash.TObjectLongHashMap;
 
 public class DocumentCorrector
@@ -36,20 +30,20 @@ public class DocumentCorrector
     		 }
     }
     
-    for(Word w: words)
-    {
-    	System.out.println(w.word()+":");
-    	for(int i=0;i<w.contexts().size();i++)
-    	{
-    		System.out.println(" position is "+w.contexts().get(i).position());
-    		for(int j=1;j<=4;j++)
-    		{
-    			String[] tmp = w.contexts().get(i).get(j);
-    			System.out.println(tmp[0]+" "+tmp[1]+" "+tmp[2]+" "+tmp[3]);	
-    		}
-    		
-    	}
-    }
+//    for(Word w: words)
+//    {
+//    	System.out.println(w.word()+":");
+//    	for(int i=0;i<w.contexts().size();i++)
+//    	{
+//    		System.out.println(" position is "+w.contexts().get(i).position());
+//    		for(int j=1;j<=4;j++)
+//    		{
+//    			String[] tmp = w.contexts().get(i).get(j);
+//    			System.out.println(tmp[0]+" "+tmp[1]+" "+tmp[2]+" "+tmp[3]);	
+//    		}
+//    		
+//    	}
+//    }
     
     return correct(correctors, words);
   }

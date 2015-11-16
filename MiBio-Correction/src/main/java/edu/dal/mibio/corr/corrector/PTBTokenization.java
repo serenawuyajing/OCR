@@ -188,6 +188,7 @@ public class PTBTokenization {
 		    } 
 	    	  
 	      }
+	    
 		    /* Store the tailing tokens. */
 		    for (int i = 0; i < 3; widx++, i++) {
 		      idx = (widx + 5) % 8;

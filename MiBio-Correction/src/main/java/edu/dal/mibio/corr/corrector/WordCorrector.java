@@ -7,7 +7,7 @@ import java.util.Set;
 
 public abstract class WordCorrector
 {
-  private static Set<String> typeSet = new HashSet<String>();
+  public static List<String> typeSet = new ArrayList<String>();
 
   private ErrorDetector detector;
   private ErrorCorrector corrector;
@@ -26,16 +26,13 @@ public abstract class WordCorrector
     typeSet.add(type);
   }
 
-  public List<Error> correct(List<Word> words)
+  public List<Error> correct(Word word)
   {
     List<Error> errors = new ArrayList<Error>();
-    for (Word word : words)
-    {
-    	EditDistanceErrorCorrector.getEditDistanceResult(word.word());
-    	if (detector.isError(word))
-    	        errors.addAll(corrector.correct(word));
-    }
-     
+	if (detector.isError(word))
+	{
+		 errors.addAll(corrector.correct(word));
+	}      
     return errors;
   }
   

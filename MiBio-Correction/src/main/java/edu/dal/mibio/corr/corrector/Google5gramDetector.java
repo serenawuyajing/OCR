@@ -18,7 +18,6 @@ public class Google5gramDetector implements ErrorDetector {
 	
 	public boolean isError(Word word)
 	{
-		 System.out.println("five gram detect start");
 		 boolean isErrorFlag = true;
 		 for(int i=0;i<word.contexts().size();i++)
 		 {
@@ -42,7 +41,6 @@ public class Google5gramDetector implements ErrorDetector {
 				break;
 			} 
 		 }
-		 System.out.println("five gram detect end");
 		 return isErrorFlag;
 	}
 

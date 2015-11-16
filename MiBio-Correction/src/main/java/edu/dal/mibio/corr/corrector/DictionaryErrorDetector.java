@@ -19,17 +19,6 @@ public class DictionaryErrorDetector
   @Override
   public boolean isError(Word word)
   {
-	boolean isErrorFlag = true;
-	Set<String> posWords = new HashSet<String>();
-	CommonFuntions.getFirstContexts(posWords, word.word());
-	for(String posWord: posWords)
-	{
-		if(dictionary.contains(posWord))
-		{
-			isErrorFlag = false;
-			break;
-		}
-	}
-    return isErrorFlag;
+     return !dictionary.contains(word.word().toLowerCase());
   }
 }

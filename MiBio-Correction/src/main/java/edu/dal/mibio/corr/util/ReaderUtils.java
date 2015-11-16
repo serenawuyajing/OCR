@@ -48,7 +48,10 @@ public class ReaderUtils
       BufferedReader br = new BufferedReader(reader);
     ){
       for (String line; (line = br.readLine()) != null;) {
-        dic.add(line);
+    	  if(!dic.contains(line.toLowerCase()))
+    	  {
+    		  dic.add(line.toLowerCase());  
+    	  }
       }
       br.close();
     }

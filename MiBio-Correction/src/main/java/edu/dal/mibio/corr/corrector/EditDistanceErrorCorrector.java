@@ -41,7 +41,7 @@ abstract class EditDistanceErrorCorrector
     for(String dWord: dSet)
       if(contains(dWord))
         candList.add(new Candidate(dWord, score(word.word(), dWord)));
-    
+   
     /* Sort candidates in the descending order by their confidence. */
     Collections.sort(candList, new Comparator<Candidate>(){
       public int compare(Candidate s1, Candidate s2) {

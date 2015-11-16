@@ -11,8 +11,8 @@ public class CommonFuntions {
 	
 	public static final List<Character> ASCII_LIST = new ArrayList<Character>();
 	static {
-	    for(int i = 65; i < 91; i++)
-	      ASCII_LIST.add((char)i);
+//	    for(int i = 65; i < 91; i++)
+//	      ASCII_LIST.add((char)i);
 	    for(int i = 97; i < 123; i++)
 	      ASCII_LIST.add((char)i);
 	    ((ArrayList<Character>)ASCII_LIST).trimToSize();

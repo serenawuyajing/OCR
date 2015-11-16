@@ -15,7 +15,7 @@ import gnu.trove.map.hash.TObjectLongHashMap;
 public class DocumentCorrector
 {
  
-  public List<Error> correct(List<WordCorrector> correctors, String content)
+  public List<Error> correct(int dictNum, boolean fiveGramFlag,List<WordCorrector> correctors, String content)
   {
     TObjectLongHashMap<String> map = Unigram.getInstance().map();
     Map<String, Word> wordMap = PTBTokenization.getTokens(content,map);
@@ -45,7 +45,7 @@ public class DocumentCorrector
 //    	}
 //    }
     
-    return correct(correctors, words);
+    return correct(dictNum,fiveGramFlag,correctors, words);
   }
   
  
@@ -107,43 +107,71 @@ public class DocumentCorrector
 	  return errs;
   }
   
-  private List<Error> correct(List<WordCorrector> correctors, List<Word> words)
+  private List<Error> correct(int dictNum, boolean fiveGramFlag,List<WordCorrector> correctors, List<Word> words)
   {
 	 Map<String,List<Error>> errMap = new HashMap<String,List<Error>>();
-	 int dictNum=0;
-	 
-     for (WordCorrector cor : correctors) {
-	      List<Error> errs = cor.correct(words);
-	      
-	      if(cor.type().equals("typeDict"))
-	      {
-	    	  dictNum++;
-	      }
-	      
-	      if(errs.size()>0)
-	      {
-	    	  if(cor.type().equals("typeDict"))
-		      {
-		    	  if(errMap.containsKey("typeDict"))
-		    	  {
-		    		  for(Error e: errs)
-		    		  {
-		    			  errMap.get("typeDict").add(e);
-		    		  }
-		    		  
-		    	  }
-		    	  else
-		    	  {
-		    		  errMap.put(cor.type(), errs); 
-		    	  }  
-		      }
-		      else
-		      {
-		    	  errMap.put(cor.type(), errs);
-		      }  
-	      }
-    }
-     
+	 boolean fiveGramResult = true;
+	
+	 for(Word word: words)
+	 {
+		 fiveGramResult = true;
+		 EditDistanceErrorCorrector.getEditDistanceResult(word.word());
+		
+		 if(fiveGramFlag == true)
+		 { 
+			 List<Error> errors = correctors.get(correctors.size()-1).correct(word); 
+			 
+			 if(errors.size()>0)
+		     {
+				 if(errors.get(0).candidates().size() == 0)
+				 {
+					 /*dictionary*/
+					 fiveGramResult = false;
+				 }
+		     }
+			 
+			 if(fiveGramResult == true)
+			 {
+				 if(errors.size()>0)
+			     {
+			    	 if(errMap.containsKey("type5grams"))
+			    	 {
+			    		  for(Error e: errors)
+			    		  {
+			    			  errMap.get("type5grams").add(e);
+			    		  } 
+			    	 } 
+			    	 else
+			    	 {
+			    		   errMap.put("type5grams",errors);
+			    	 }
+			     }
+			 }
+			 else
+			 {
+				for(int i=0;i<correctors.size()-1;i++)
+				{
+					List<Error> dictErrors = correctors.get(i).correct(word);
+					 
+					 if(dictErrors.size()>0)
+				     {
+				    	 if(errMap.containsKey("typeDict"))
+				    	 {
+				    		  for(Error e: dictErrors)
+				    		  {
+				    			  errMap.get("typeDict").add(e);
+				    		  } 
+				    	 } 
+				    	 else
+				    	 {
+				    		   errMap.put("typeDict",dictErrors);
+				    	 }
+				     }
+				}
+			 }
+		 }
+	 }
+		 
      if(errMap.containsKey("typeDict") && dictNum >1)
      {
     	 List<Error> errs= combineDictErrors(errMap.get("typeDict"),dictNum);
@@ -160,28 +188,13 @@ public class DocumentCorrector
      
      if(errMap.containsKey("type5grams"))
      {
-    	 if(!errMap.get("type5grams").isEmpty())
-         {
-        	 for(Error e: errMap.get("type5grams"))
-    	    {
-    	    	if(e.candidates().size() == 0)
-    	    	{
-    	    		 if(errMap.get("typeDict").contains(e))
-    	    		 {
-    	    			 int index = errMap.get("typeDict").indexOf(e);
-    	        		 Error newErr = new Error(e.name(),e.position(),errMap.get("typeDict").get(index).candidates());
-    	        		 errs.add(newErr);
-    	    		 }    		
-    	    	}
-    	    	else
-    	    	{
-    	    		errs.add(e);
-    	    	}
-    	    }
-         }
-    	 
+    	 errs.addAll(errMap.get("type5grams"));
      }
-    
+     
+     if(errMap.containsKey("typeDict"))
+     {
+    	 errs.addAll(errMap.get("typeDict"));
+     }
  
     /* Sort errors by position. */
     Collections.sort(errs, new Comparator<Error>(){

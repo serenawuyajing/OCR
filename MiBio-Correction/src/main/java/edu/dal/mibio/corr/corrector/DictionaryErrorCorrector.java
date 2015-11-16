@@ -17,7 +17,7 @@ public class DictionaryErrorCorrector
   @Override
   protected boolean contains(String word)
   {
-    return dictionary.contains(word);
+     return dictionary.contains(word.toLowerCase());
   }
 
   @Override

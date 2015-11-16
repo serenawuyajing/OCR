@@ -16,7 +16,7 @@ import gnu.trove.map.hash.TObjectLongHashMap;
 
 public class PTBTokenization {
 
-	  private static Pattern SPLIT_PATTERN = Pattern.compile("^\\w+[-./]");
+	  private static Pattern SPLIT_PATTERN = Pattern.compile("\\w+[-./]");
 
 	  public static Map<String, Word> getTokens(String content,TObjectLongHashMap<String> map)
 	  {
@@ -135,14 +135,21 @@ public class PTBTokenization {
 	    	  /* Split if '-','.' in token. */
 	    	    Matcher matchSplit = SPLIT_PATTERN.matcher(processToken);
 		        if(matchSplit.find()) {
-		        	Pattern TOKEN_PATTERN = Pattern.compile("(\\w+)");
-		        	Matcher matchToken = TOKEN_PATTERN.matcher(processToken);
-		        	while(matchToken.find())
-		        	{
-		        		  /* Add token to context. */
-				    	 idx = widx % 8;
-				 		 context[idx] = matchToken.group();
-				 	     position[idx] = key+matchToken.start(); 
+	        		  /* Add token to context. */
+	                 String[] words = processToken.split("[-./]");
+	                 for(int wordIndex=0;wordIndex<words.length;wordIndex++)
+	                 {
+	                	 idx = widx % 8;
+				 		 context[idx] = words[wordIndex];
+				 		 if(wordIndex == 0)
+				 		 {
+				 			position[idx] = key;
+				 		 }
+				 		 else
+				 		 {
+				 			 position[idx] = key+words[wordIndex-1].length()+1;  
+				 		 }
+				 	    
 
 				        if (widx > 3) {
 
@@ -159,8 +166,8 @@ public class PTBTokenization {
 				              context[(widx - 1) % 8],
 				              context[widx % 8]));
 				        }
-				        widx++;
-		        	}
+				        widx++; 
+	                 }
 			      }
 		       else
 		      {

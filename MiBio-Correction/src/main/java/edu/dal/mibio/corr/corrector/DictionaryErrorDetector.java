@@ -19,6 +19,7 @@ public class DictionaryErrorDetector
   @Override
   public boolean isError(Word word)
   {
-     return !dictionary.contains(word.word().toLowerCase());
+     return !(dictionary.contains(word.word()) || dictionary.contains(word.word().toLowerCase()) 
+    		 || dictionary.contains(word.word().toUpperCase()));
   }
 }

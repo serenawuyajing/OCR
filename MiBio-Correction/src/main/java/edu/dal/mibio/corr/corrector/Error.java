@@ -9,7 +9,7 @@ public class Error
   private String name;
   private long position;
   private List<Candidate> candidates;
-  private static final int CANDIDATE_NUM = 50;
+  private static final int CANDIDATE_NUM = 3;
   
   public Error(WordContext context, List<Candidate> candidates)
   {

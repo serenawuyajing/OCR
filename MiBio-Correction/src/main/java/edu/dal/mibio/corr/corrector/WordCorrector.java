@@ -32,7 +32,18 @@ public abstract class WordCorrector
 	if (detector.isError(word))
 	{
 		 errors.addAll(corrector.correct(word));
-	}      
+	} 
+	else
+	{
+		if(type.equals("typeDict"))
+		{
+			List<Candidate> cans = new ArrayList<Candidate>();
+			cans.add(new Candidate(word.word(),1.0));
+			for(int i=0;i < word.contexts().size(); i++) {
+				errors.add(new Error(word.word(), word.contexts().get(i).position(), cans));
+			}
+		}
+	}
     return errors;
   }
   

@@ -20,17 +20,6 @@ public class UnigramErrorDetector
   @Override
   public boolean isError(Word word)
   {
-	boolean isErrorFlag = true;
-	Set<String> posWords = new HashSet<String>();
-	CommonFuntions.getFirstContexts(posWords, word.word());
-	for(String posWord: posWords)
-	{
-		if(unigram.contains(posWord))
-		{
-			isErrorFlag = false;
-			break;
-		}
-	}
-    return isErrorFlag;
+    return true;
   }
 }

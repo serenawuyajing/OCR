@@ -15,7 +15,7 @@ abstract class EditDistanceErrorCorrector
 {
   private static final int EDIT_DISTANCE = 3;
 
-  private static final int CANDIDATE_NUM = 50;
+  private static final int CANDIDATE_NUM = 3;
 
   public static final long MAX_FREQ = 19401194714L;
   
@@ -28,6 +28,7 @@ abstract class EditDistanceErrorCorrector
   public static void getEditDistanceResult(String word)
   {
 	  dSet = new HashSet<String>();
+	  dSet.add(word);
 	  Set<String> tmpWords = new HashSet<String>();
 	  tmpWords.add(word);
 	  CommonFuntions.oneDistanceWord(dSet,tmpWords,EDIT_DISTANCE);

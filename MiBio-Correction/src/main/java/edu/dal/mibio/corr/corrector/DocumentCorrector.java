@@ -15,7 +15,7 @@ import gnu.trove.map.hash.TObjectLongHashMap;
 public class DocumentCorrector
 {
  
-  public List<Error> correct(int dictNum, boolean fiveGramFlag,List<WordCorrector> correctors, String content)
+  public List<Error> correct(List<WordCorrector> correctors, String content)
   {
     TObjectLongHashMap<String> map = Unigram.getInstance().map();
     Map<String, Word> wordMap = PTBTokenization.getTokens(content,map);
@@ -45,7 +45,7 @@ public class DocumentCorrector
 //    	}
 //    }
     
-    return correct(dictNum,fiveGramFlag,correctors, words);
+    return correct(correctors, words);
   }
   
  
@@ -107,76 +107,49 @@ public class DocumentCorrector
 	  return errs;
   }
   
-  private List<Error> correct(int dictNum, boolean fiveGramFlag,List<WordCorrector> correctors, List<Word> words)
+  private List<Error> correct(List<WordCorrector> correctors, List<Word> words)
   {
 	 Map<String,List<Error>> errMap = new HashMap<String,List<Error>>();
-	 boolean fiveGramResult = true;
-	
+	 int dictNum = 0;
+	 boolean dictFlag = false;
+			 
 	 for(Word word: words)
 	 {
-		 fiveGramResult = true;
 		 EditDistanceErrorCorrector.getEditDistanceResult(word.word());
 		
-		 if(fiveGramFlag == true)
-		 { 
-			 List<Error> errors = correctors.get(correctors.size()-1).correct(word); 
-			 
-			 if(errors.size()>0)
-		     {
-				 if(errors.get(0).candidates().size() == 0)
-				 {
-					 /*dictionary*/
-					 fiveGramResult = false;
-				 }
-		     }
-			 
-			 if(fiveGramResult == true)
+		 for(WordCorrector cor: correctors)
+		 {
+			if(dictFlag == false)
+			{
+			    if(cor.type().equals("typeDict"))
+		    	{
+		    		dictNum++;
+		    	}	
+			}
+		   
+			 List<Error> errs = cor.correct(word);
+			 if(errs.size()>0)
 			 {
-				 if(errors.size()>0)
-			     {
-			    	 if(errMap.containsKey("type5grams"))
-			    	 {
-			    		  for(Error e: errors)
-			    		  {
-			    			  errMap.get("type5grams").add(e);
-			    		  } 
-			    	 } 
-			    	 else
-			    	 {
-			    		   errMap.put("type5grams",errors);
-			    	 }
-			     }
-			 }
-			 else
-			 {
-				for(int i=0;i<correctors.size()-1;i++)
-				{
-					List<Error> dictErrors = correctors.get(i).correct(word);
-					 
-					 if(dictErrors.size()>0)
-				     {
-				    	 if(errMap.containsKey("typeDict"))
-				    	 {
-				    		  for(Error e: dictErrors)
-				    		  {
-				    			  errMap.get("typeDict").add(e);
-				    		  } 
-				    	 } 
-				    	 else
-				    	 {
-				    		   errMap.put("typeDict",dictErrors);
-				    	 }
-				     }
-				}
+				 if(errMap.containsKey(cor.type()))
+		    	 {
+		    		  for(Error e: errs)
+		    		  {
+		    			  errMap.get(cor.type()).add(e);
+		    		  } 
+		    	 } 
+		    	 else
+		    	 {
+		    		   errMap.put(cor.type(),errs);
+		    	 } 
 			 }
 		 }
+		 dictFlag = true;
 	 }
 		 
      if(errMap.containsKey("typeDict") && dictNum >1)
      {
-    	 List<Error> errs= combineDictErrors(errMap.get("typeDict"),dictNum);
     	 List<Error> errors = new ArrayList<Error>();
-    	 for (Error e : errs)
+    	 for (Error e : combineDictErrors(errMap.get("typeDict"),dictNum))
         {
     		 e.sort();
     		 errors.add(e);
@@ -184,18 +157,61 @@ public class DocumentCorrector
         errMap.put("typeDict", errors);
      }
      
+     List<Error> errors = new ArrayList<Error>();
+     
+     for(String type: errMap.keySet())
+     {
+    	 double con_weight  = 0.0;
+    	 if(type.equals("type5grams"))
+    	 {
+    		 con_weight =3.0;
+    	 }
+    	 else if(type.equals("typeDict"))
+    	 {
+    		 con_weight =2.0;
+    	 }
+    	 else
+    	 {
+    		 con_weight =1.0;
+    	 }
+    	 for(Error e: errMap.get(type))
+     	{
+     		List<Candidate> canList = new ArrayList<Candidate>();
+     		for(Candidate c: e.candidates())
+     		{
+     			canList.add(new Candidate(c.name(),c.confidence()+con_weight));
+     		}
+     		
+     		if(errors.contains(e))
+     		{
+     			int index = errors.indexOf(e);
+     			errors.get(index).candidates().addAll(canList);
+     		}
+     		else
+     		{
+     			errors.add(new Error(e.name(),e.position(),canList));
+     		}
+     	}
+     }
+     
      List<Error> errs = new ArrayList<Error>();
-     
-     if(errMap.containsKey("type5grams"))
-     {
-    	 errs.addAll(errMap.get("type5grams"));
-     }
-     
-     if(errMap.containsKey("typeDict"))
-     {
-    	 errs.addAll(errMap.get("typeDict"));
-     }
- 
+	 for(Error e : errors)
+    {
+		 /* Sort candidates in the descending order by their confidence. */
+	    Collections.sort(e.candidates(), new Comparator<Candidate>(){
+	      public int compare(Candidate s1, Candidate s2) {
+	        if(s1.confidence() < s2.confidence()) {
+	          return 1;
+	        } else if(s1.confidence() == s2.confidence()) {
+	          return 0; 
+	        } else {
+	          return -1;
+	        }
+	      }
+	    });
+		errs.add(e);
+    }
+    
     /* Sort errors by position. */
     Collections.sort(errs, new Comparator<Error>(){
       @Override

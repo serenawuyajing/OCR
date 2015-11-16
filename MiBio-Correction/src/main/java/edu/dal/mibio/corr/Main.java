@@ -37,30 +37,15 @@ public class Main
       throws FileNotFoundException, IOException
   {
 	 long start = System.currentTimeMillis();
-	 int dictNum=0;
-	 boolean fiveGramFlag = false;
      List<WordCorrector> corrs = new ArrayList<WordCorrector>();
      corrs.add(new WikiWordCorrector());
      corrs.add(new DomainWordCorrector());
      corrs.add(new LexiconWordCorrector());
-    // corrs.add(new UnigramWordCorrector());
+     corrs.add(new UnigramWordCorrector());
      corrs.add(new Google5gramWordCorrector());
      
-    for(String type: WordCorrector.typeSet)
-    {
-    	if(type.equals("typeDict"))
-    	{
-    		dictNum++;
-    	}
-    	if(type.equals("type5grams"))
-    	{
-    		fiveGramFlag = true;
-    	}
-    }
+    List<Error> errs = new DocumentCorrector().correct(corrs,ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SEGMENT)));
     
-    List<Error> errs = new DocumentCorrector().correct(dictNum,fiveGramFlag,corrs,ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SEGMENT)));
-    
-  
 	for(Error e: errs)
 	{
 		System.out.println(e);
@@ -68,7 +53,7 @@ public class Main
 	
 
 //     TObjectLongHashMap<String> map = new TObjectLongHashMap<String>();
-//     Map<String, Word> words = PTBTokenization.getTokens(ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SIMPLE)), map);
+//     Map<String, Word> words = PTBTokenization.getTokens("j^ellowish-white ORIOL ID^E.", map);
 //     for(String key: words.keySet())
 //     {
 //        Word w = words.get(key);

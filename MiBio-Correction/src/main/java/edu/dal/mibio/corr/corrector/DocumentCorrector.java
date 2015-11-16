@@ -179,7 +179,7 @@ public class DocumentCorrector
     	 double con_weight  = 0.0;
     	 if(type.equals("type5grams"))
     	 {
-    		 con_weight =3.0;
+    		 con_weight =4.0;
     	 }
     	 else if(type.equals("typeDict"))
     	 {
@@ -187,7 +187,7 @@ public class DocumentCorrector
     	 }
     	 else
     	 {
-    		 con_weight =1.0;
+    		 con_weight =0.0;
     	 }
     	 for(Error e: errMap.get(type))
      	{

@@ -57,52 +57,67 @@ public class DocumentCorrector
 	 
 	  for(Error e: errors)
 	  {
-		  if(Collections.frequency(errors, e) == dictNum)
+		  if(e.candidates().size() == 1 && e.candidates().get(0).confidence() == 1.0)
 		  {
-			  List<Candidate> candidates = new ArrayList<Candidate>();
-			  List<Candidate> cans = new ArrayList<Candidate>();
-			  if(errs.contains(e))
+			  if(!errs.contains(e))
 			  {
-				  int index = errs.indexOf(e);
-				  candidates = new ArrayList<Candidate>(errs.get(index).candidates());
-				  Map<String, Candidate> candSetInMap = new HashMap<String, Candidate>();
-				  
-				  for(Candidate c: candidates)
-				  {
-					  candSetInMap.put(c.name(), c); 
-				  }
-				  
-				  for(Candidate c : e.candidates())
-				  {
-					 if(candSetInMap.containsKey(c.name()))
-					 {
-						 Candidate candInMap = new Candidate(c.name(),
-								  candSetInMap.get(c.name()).confidence() + c.confidence()*weight);
-						  candSetInMap.put(c.name(), candInMap);
-					 }
-					 else
-					 {
-						 candSetInMap.put(c.name(), new Candidate(c.name(),c.confidence()*weight));
-					 }
-				  }
-				  
-				  for(Candidate c: candSetInMap.values())
-		          {
-					  cans.add(c);
-		          }
-				  errs.remove(index);
+				  errs.add(e); 
 			  }
 			  else
 			  {
-				  for(Candidate c: e.candidates())
-				  {
-					  Candidate tmp = new Candidate(c.name(),c.confidence()*weight);
-					  cans.add(tmp);
-				  }
+				  continue;
 			  }
-			  Error newError = new Error(e.name(),e.position(),cans);
-			  errs.add(newError);
 		  }
+		  else
+		  {
+			  if(Collections.frequency(errors, e) == dictNum)
+			  {
+				  List<Candidate> candidates = new ArrayList<Candidate>();
+				  List<Candidate> cans = new ArrayList<Candidate>();
+				  if(errs.contains(e))
+				  {
+					  int index = errs.indexOf(e);
+					  candidates = new ArrayList<Candidate>(errs.get(index).candidates());
+					  Map<String, Candidate> candSetInMap = new HashMap<String, Candidate>();
+					  
+					  for(Candidate c: candidates)
+					  {
+						  candSetInMap.put(c.name(), c); 
+					  }
+					  
+					  for(Candidate c : e.candidates())
+					  {
+						 if(candSetInMap.containsKey(c.name()))
+						 {
+							 Candidate candInMap = new Candidate(c.name(),
+									  candSetInMap.get(c.name()).confidence() + c.confidence()*weight);
+							  candSetInMap.put(c.name(), candInMap);
+						 }
+						 else
+						 {
+							 candSetInMap.put(c.name(), new Candidate(c.name(),c.confidence()*weight));
+						 }
+					  }
+					  
+					  for(Candidate c: candSetInMap.values())
+			          {
+						  cans.add(c);
+			          }
+					  errs.remove(index);
+				  }
+				  else
+				  {
+					  for(Candidate c: e.candidates())
+					  {
+						  Candidate tmp = new Candidate(c.name(),c.confidence()*weight);
+						  cans.add(tmp);
+					  }
+				  }
+				  Error newError = new Error(e.name(),e.position(),cans);
+				  errs.add(newError);
+			  } 
+		  }
+		  
 	  }
 	  return errs;
   }

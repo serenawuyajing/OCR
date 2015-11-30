@@ -121,7 +121,9 @@ public class CommonFuntions {
 			      /* Substitution operation. */
 			      for(int charIndex = 0; charIndex < ASCII_LIST.size(); charIndex++) {
 			        for(int i = 0;i < word.length(); i++) {
-			          String newWord = word.replace(word.charAt(i), ASCII_LIST.get(charIndex));
+			          StringBuilder tmp = new StringBuilder(word);
+			          tmp.setCharAt(i, ASCII_LIST.get(charIndex));
+			          String newWord = tmp.toString();
 			          if(!distanceWords.contains(newWord))
 			          {
 			        	  distanceWords.add(newWord);  

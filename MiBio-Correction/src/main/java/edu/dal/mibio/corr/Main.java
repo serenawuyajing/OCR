@@ -44,7 +44,7 @@ public class Main
      corrs.add(new UnigramWordCorrector());
      corrs.add(new Google5gramWordCorrector());
      
-    List<Error> errs = new DocumentCorrector().correct(corrs,ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SEGMENT)));
+     List<Error> errs = new DocumentCorrector().correct(corrs,ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SEGMENT)));
     
 	for(Error e: errs)
 	{
@@ -69,6 +69,8 @@ public class Main
 //       		
 //       	} 
 //     }
+	 
+	
 	 
     System.out.println("--- Memory Usage:");   
     Runtime rt=Runtime.getRuntime( ); 

@@ -17,8 +17,8 @@ public class DocumentCorrector
  
   public List<Error> correct(List<WordCorrector> correctors, String content)
   {
-    TObjectLongHashMap<String> map = Unigram.getInstance().map();
-    Map<String, Word> wordMap = PTBTokenization.getTokens(content,map);
+     TObjectLongHashMap<String> map = Unigram.getInstance().map();
+     Map<String, Word> wordMap = PTBTokenization.getTokens(content,map);
     
     /* Filter words that exists in the unigram. */
     List<Word> words = new LinkedList<Word>(wordMap.values());

@@ -18,13 +18,13 @@ public class UnigramErrorCorrector
   @Override
   protected boolean contains(String word)
   {
-    return unigram.containsKey(word) && CommonFuntions.hasEnoughFreq(word, unigram.get(word));
+    return unigram.containsKey(word);
   }
 
   @Override
   protected double score(String word, String candidate)
   {
-     return LCS.lcs(word, candidate)
-          * Math.log(unigram.get(candidate))/Math.log((double)MAX_FREQ);
+     return 0.9*LCS.lcs(word, candidate)
+          +0.1*Math.log(unigram.get(candidate))/Math.log((double)MAX_FREQ);
   }
 }

@@ -23,7 +23,7 @@ import gnu.trove.map.hash.TObjectLongHashMap;
 public class Google5gramCorrector implements ErrorCorrector{
 	
 	private TObjectIntHashMap<String> unigram;
-    private static final int CANDIDATE_NUM = 3;
+    private static final int CANDIDATE_NUM = 10;
     private static final int EDIT_DISTANCE = 3;
     private File[] relaxMatchingFile;
     

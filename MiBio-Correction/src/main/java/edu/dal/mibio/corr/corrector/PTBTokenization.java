@@ -109,7 +109,7 @@ public class PTBTokenization {
 	    	  if(processToken.contains("-"))
 		      {
 		    	 String tmp = processToken.replace("-", "");
-		    	 if(!tmp.isEmpty() && CommonFuntions.validUniGram(tmp,map.get(tmp)))
+		    	 if(!tmp.isEmpty() && map.containsKey(tmp))
 		    	 {
 		    		 idx = widx % 8;
 		    		 context[idx] = tmp;

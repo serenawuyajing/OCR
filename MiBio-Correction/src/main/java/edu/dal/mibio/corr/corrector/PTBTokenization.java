@@ -44,12 +44,12 @@ public class PTBTokenization {
 	    
 	      if(prevToken != null && prevToken.endPosition() == token.beginPosition())
 	      {
-	    	  if(!(token.toString().equals(",") || token.toString().equals(".") 
+	    	  if((!(token.toString().equals(",") || token.toString().equals(".") 
 	    			  || token.toString().equals(":") || token.toString().equals("!") || token.toString().equals("?")
 	    			  || token.toString().equals("\"") || token.toString().equals("(") || token.toString().equals(")") || token.toString().equals(";"))
 	    			  && !(prevToken.toString().equals(",") || prevToken.toString().equals(".") 
 	    	    			  || prevToken.toString().equals(":") || prevToken.toString().equals("!") || prevToken.toString().equals("?")
-	    	    			  || prevToken.toString().equals("\"") || prevToken.toString().equals("(") || prevToken.toString().equals(")") || prevToken.toString().equals(";")))
+	    	    			  || prevToken.toString().equals("\"") || prevToken.toString().equals("(") || prevToken.toString().equals(")") || prevToken.toString().equals(";"))))
 	    	  {
 	    		  token.setBeginPosition(prevToken.beginPosition());
 	    		  if(proProcessTokens.containsKey(token.beginPosition()))
@@ -63,6 +63,15 @@ public class PTBTokenization {
 	    		  proProcessTokens.put(token.beginPosition(), token.toString()); 
 	    	  }
 	      }
+	      else if(prevToken != null && prevToken.toString().endsWith("~"))
+	      {
+	    	  token.setBeginPosition(prevToken.beginPosition());
+    		  if(proProcessTokens.containsKey(token.beginPosition()))
+    		  {
+    			 String tmpContext = proProcessTokens.get(token.beginPosition())+token.toString();
+    			 proProcessTokens.put(token.beginPosition(), tmpContext);
+    		  } 
+	      }
 	      else
 	      {
 	    	  proProcessTokens.put(token.beginPosition(), token.toString());
@@ -70,6 +79,7 @@ public class PTBTokenization {
 	      
 	       prevToken = token;
 	    }
+	    
 	    
 	    SortedSet<Integer> keys = new TreeSet<Integer>(proProcessTokens.keySet());
 	    for(Integer key:keys)
@@ -106,27 +116,32 @@ public class PTBTokenization {
 	      Matcher m=Pattern.compile(regex).matcher(processToken);
 	      if(m.matches())
 	      {
-	    	  if(processToken.contains("-"))
+	    	  if(processToken.contains("~"))
 		      {
-		    	 String tmp = processToken.replace("-", "");
-		    	 if(!tmp.isEmpty() && map.containsKey(tmp))
+		    	 String tmp = processToken.replace("~", "");
+		    	 if(!tmp.isEmpty())
 		    	 {
 		    		 idx = widx % 8;
 		    		 context[idx] = tmp;
 		    	     position[idx] = key;
-		    	     if (widx > 3) {
-			          idx = (widx - 3) % 8;
-			          addToMap(wordMap, new WordContext(
-			              position[idx],
-			              context[(widx + 1) % 8],
-			              context[(widx + 2) % 8],
-			              context[(widx + 3) % 8],
-			              context[(widx + 4) % 8],
-			              context[idx],
-			              context[(widx - 2) % 8],
-			              context[(widx - 1) % 8],
-			              context[widx % 8]));
-		    	     }
+		    		 if(!map.containsKey(tmp))
+		    		 {
+		    			 if (widx > 3) {
+
+					          /* Store the full-context token. */
+					          idx = (widx - 3) % 8;
+					          addToMap(wordMap, new WordContext(
+					              position[idx],
+					              context[(widx + 1) % 8],
+					              context[(widx + 2) % 8],
+					              context[(widx + 3) % 8],
+					              context[(widx + 4) % 8],
+					              context[idx],
+					              context[(widx - 2) % 8],
+					              context[(widx - 1) % 8],
+					              context[widx % 8]));
+					        } 
+		    		 }
 		    	     widx++;
 		    	     continue;
 		    	 }

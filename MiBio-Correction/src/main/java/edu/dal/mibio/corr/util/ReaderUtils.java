@@ -15,28 +15,24 @@ public class ReaderUtils
 	public static String read(Reader reader)
 		      throws IOException
   {
-    String prevLine="";
+    StringBuilder sb= new StringBuilder();
     try (
       BufferedReader br = new BufferedReader(reader);
     ){
       for (String line; (line = br.readLine()) != null;) {
-    	  if(prevLine.length()>0){
-				String lastChar = prevLine.substring(prevLine.length()-2,prevLine.length()-1);
-				if(lastChar.equals("-")){
-					prevLine = prevLine.substring(0, prevLine.length()-1)+line;
-				}
-				else
-				{
-					prevLine =prevLine+"\n"+line;
-				}	
-			}
-			else{
-				prevLine = line;
-			}	
+    	  if(sb.length()>0)
+    	  {
+    		  char lastChar = sb.charAt(sb.length()-3);
+    		  if(lastChar == '-')
+    		  {
+    			  sb.setCharAt(sb.length()-3,'~');
+    		  }
+    	  }
+    	  sb.append(line).append('\n'); 
       }
       br.close();
     }
-    return prevLine;
+    return sb.toString();
   }
 
   public static Set<String> readList(Reader reader)

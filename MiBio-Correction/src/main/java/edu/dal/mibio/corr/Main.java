@@ -28,6 +28,7 @@ import edu.dal.mibio.corr.util.CommonFuntions;
 import edu.dal.mibio.corr.util.LCS;
 import edu.dal.mibio.corr.util.ReaderUtils;
 import edu.dal.mibio.corr.util.ResourceUtils;
+import edu.dal.mibio.corr.util.Unigram;
 import gnu.trove.map.hash.TObjectLongHashMap;
 
 public class Main
@@ -51,9 +52,9 @@ public class Main
 		System.out.println(e);
 	}
 	
-
-//     TObjectLongHashMap<String> map = new TObjectLongHashMap<String>();
-//     Map<String, Word> words = PTBTokenization.getTokens("j^ellowish-white ORIOL ID^E.", map);
+      
+//     TObjectLongHashMap<String> map = Unigram.getInstance().map();
+//     Map<String, Word> words = PTBTokenization.getTokens(ReaderUtils.read(new FileReader(ResourceUtils.TEST_INPUT_SIMPLE)), map);
 //     for(String key: words.keySet())
 //     {
 //        Word w = words.get(key);
@@ -69,7 +70,7 @@ public class Main
 //       		
 //       	} 
 //     }
-	 
+//	 
 	
 	 
     System.out.println("--- Memory Usage:");   

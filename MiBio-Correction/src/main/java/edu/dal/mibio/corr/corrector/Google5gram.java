@@ -10,8 +10,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class Google5gram {
+	
+	private static Pattern NUM_PATTERN = Pattern.compile("[0-9]*");
 	
 	public static List<String> getValues(File[] relaxmatchingfiles,String firstContext)
 	{
@@ -67,10 +70,20 @@ public class Google5gram {
 			String[] unigramWords = values.get(i).split("\\s+");
 			for(int index=0;index<tmpContexts.length;index++)
 			{
-				if(!unigramWords[index].equalsIgnoreCase(tmpContexts[index]) && tmpContexts[index] != null)
+				if(tmpContexts[index] != null && unigramWords[index] != null)
 				{
-	                flag = false;
-	                break;
+					if(isInteger(unigramWords[index]) && isInteger(tmpContexts[index]))
+					{
+						    /*both are number, regard all of numbers as the same*/
+					}
+					else
+					{
+						if(!unigramWords[index].equalsIgnoreCase(tmpContexts[index]))
+						{
+			                flag = false;
+			                break;
+						}
+					}		
 				}
 			}
 			if(flag == true)
@@ -99,5 +112,11 @@ public class Google5gram {
 		
 		return isExactMatch(values,tmpContexts,canpos);
 	}
+	
+	 public static boolean isInteger(String str)
+    {
+   	 Pattern pattern = Pattern.compile("[0-9]*");
+   	 return pattern.matcher(str).matches();
+    }
 
 }
